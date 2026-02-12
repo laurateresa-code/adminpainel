@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso ao Painel — Corporativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --bg-alt: #0f1421;
+      --surface: #111827;
+      --card: #121826;
+      --border: #1f2a37;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 0% 0%, rgba(124,58,237,0.15), transparent 60%),
+        radial-gradient(800px 500px at 100% 100%, rgba(34,211,238,0.12), transparent 50%),
+        linear-gradient(180deg, var(--bg), var(--bg-alt));
+      min-height: 100vh;
+    }
+    .auth {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      min-height: 100vh;
+    }
+    .brand {
+      position: relative;
+      padding: 48px;
+      overflow: hidden;
+      background:
+        radial-gradient(600px 300px at 30% 20%, rgba(124,58,237,0.15), transparent 60%),
+        radial-gradient(600px 300px at 80% 70%, rgba(34,211,238,0.12), transparent 60%);
+    }
+    .brand::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+    .brand::after {
+      content: "";
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      box-shadow:
+        200px 150px 0 0 rgba(124,58,237,0.22),
+        380px 280px 0 0 rgba(34,211,238,0.18),
+        620px 90px 0 0 rgba(124,58,237,0.16),
+        860px 320px 0 0 rgba(34,211,238,0.14);
+      filter: blur(0.5px);
+      pointer-events: none;
+    }
+    .brand-content {
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .logo {
+      width: 160px;
+      height: auto;
+    }
+    .brand-title {
+      font-weight: 600;
+      font-size: 28px;
+      letter-spacing: 0.2px;
+    }
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .form-area {
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(180deg, rgba(18,24,38,0.95), rgba(16,22,34,0.95));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      padding: 28px;
+    }
+    .card-title {
+      margin: 0 0 18px 0;
+      font-weight: 500;
+      font-size: 20px;
+    }
+    .error {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fecaca;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #0f1523;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: box-shadow .2s, border-color .2s, transform .2s;
+    }
+    .input-group.focused {
+      border-color: rgba(124,58,237,0.6);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 20px rgba(124,58,237,0.18);
+      transform: translateY(-1px);
+    }
+    .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: #cbd5e1;
+    }
+    .input {
+      appearance: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      width: 100%;
+      font-size: 14px;
+      padding: 12px 14px;
+    }
+    .input::placeholder {
+      color: #74809b;
+    }
+    .input:-webkit-autofill,
+    .input:-webkit-autofill:hover,
+    .input:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text);
+      transition: background-color 9999s ease-out;
+      -webkit-box-shadow: 0 0 0px 1000px #0f1523 inset;
+      box-shadow: 0 0 0px 1000px #0f1523 inset;
+      caret-color: var(--text);
+    }
+    input, textarea, select { color-scheme: dark; }
+    .actions {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(180deg, #7c3aed, #6d28d9);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.2), 0 14px 40px rgba(124,58,237,0.35);
+      transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.26), 0 18px 56px rgba(124,58,237,0.42);
+      filter: brightness(1.05);
+    }
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.22), 0 10px 30px rgba(124,58,237,0.3);
+    }
+    .note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    @media (max-width: 980px) {
+      .auth { grid-template-columns: 1fr; }
+      .brand { display: none; }
+      .form-area { padding: 24px; }
+      .card { border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth">
+    <div class="brand">
+      <div class="brand-content">
+        <img class="logo" src="../assets/images/logo/logo.png" alt="Logo">
+        <div class="brand-title">Painel Corporativo</div>
+        <div class="brand-subtitle">Gerenciamento inteligente de projetos corporativos</div>
+      </div>
+    </div>
+    <div class="form-area">
+      <div class="card">
+        <div class="card-title">Acesso ao Painel</div>
+        <div id="error" class="error"><i class="fa-solid fa-triangle-exclamation"></i><span id="error-text"></span></div>
+        <form id="login-form">
+          <div class="inputs">
+            <div class="input-group" data-group>
+              <div class="icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 8l9 6 9-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+              </div>
+              <input id="email" type="email" class="input" placeholder="E-mail corporativo" autocomplete="username" required>
+            </div>
+            <div class="input-group" data-group>
+              <div class="icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M12 4a4 4 0 00-4 4v2h8V8a4 4 0 00-4-4z" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+              </div>
+              <input id="password" type="password" class="input" placeholder="Senha" autocomplete="current-password" required>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn" id="login-btn">Entrar</button>
+            <div class="note">Acesso restrito a administradores. Para acesso, contate o suporte.</div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from '../config/supabaseClient.js';
+
+    const loginForm = document.getElementById('login-form');
+    const errorBox = document.getElementById('error');
+    const errorText = document.getElementById('error-text');
+    const loginBtn = document.getElementById('login-btn');
+    const groups = Array.from(document.querySelectorAll('[data-group]'));
+
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        window.location.href = 'dashboard.html';
+      }
+    }
+    checkSession();
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.style.display = 'none';
+      errorText.textContent = '';
+      loginBtn.textContent = 'Entrando...';
+      loginBtn.disabled = true;
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+          
+        if (error) throw error;
+        window.location.href = 'dashboard.html';
+
+      } catch (error) {
+        const msg = error.message === 'Invalid login credentials' ? 'Credenciais inválidas ou acesso não autorizado' : error.message;
+        errorText.textContent = msg;
+        errorBox.style.display = 'flex';
+        loginBtn.textContent = 'Entrar';
+        loginBtn.disabled = false;
+      }
+    });
+    groups.forEach(g => {
+      const input = g.querySelector('.input');
+      input.addEventListener('focus', () => g.classList.add('focused'));
+      input.addEventListener('blur', () => g.classList.remove('focused'));
+    });
+  </script>
+</body>
+</html>

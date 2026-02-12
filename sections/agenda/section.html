@@ -1,0 +1,44 @@
+<section class="agenda" id="agenda" aria-label="Seleção de datas" data-month="4" data-year="2026" data-mode="range">
+  <div class="container">
+    <div class="agenda__inner">
+      <h2 class="section-title" data-config-text="agendaTitle" id="agendaTitle">SELECIONE O PERÍODO DA SUA RESERVA</h2>
+
+      <div class="selectors">
+        <!-- Wrapper para Adultos + Nota -->
+        <div class="selector-group">
+          <div class="qty">
+            <span class="qty__label">Adultos</span>
+            <button class="qty__btn qty--dec" data-target="adults" aria-label="Diminuir adultos">−</button>
+            <span class="qty__value" id="qty-adults">2</span>
+            <button class="qty__btn qty--inc" data-target="adults" aria-label="Aumentar adultos">+</button>
+          </div>
+          <p class="selectors__note">* A partir dos 11 anos</p>
+        </div>
+
+        <!-- Wrapper para Crianças (para manter simetria) -->
+        <div class="selector-group">
+          <div class="qty">
+            <span class="qty__label">Crianças</span>
+            <button class="qty__btn qty--dec" data-target="kids" aria-label="Diminuir crianças">−</button>
+            <span class="qty__value" id="qty-kids">0</span>
+            <button class="qty__btn qty--inc" data-target="kids" aria-label="Aumentar crianças">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar" role="application" aria-label="Calendário de eventos">
+        <div class="calendar__header">
+          <div class="calendar__title" id="calTitle" aria-live="polite">Abril 2026</div>
+        </div>
+        <div class="calendar__weekdays" aria-hidden="true">
+          <span>DOM</span><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span>
+        </div>
+        <div class="calendar__grid" role="grid" aria-labelledby="calTitle"></div>
+      </div>
+
+      <div class="reserve__actions">
+        <button class="btn btn--pink reserve__btn" id="reserveBtn">Garantir reserva!</button>
+      </div>
+    </div>
+  </div>
+</section>

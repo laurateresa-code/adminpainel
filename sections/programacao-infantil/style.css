@@ -1,0 +1,198 @@
+.kids-program {
+  padding: 48px 20px;
+}
+
+.kids-program__carousel {
+  position: relative;
+}
+
+.kids-program__viewport {
+  overflow: hidden;
+  width: min(860px, 100%);
+  margin: 0 auto;
+}
+
+.kids-program__track {
+  display: flex;
+  transform: translateX(0);
+  transition: transform 280ms ease;
+  will-change: transform;
+}
+
+.kids-program__slide {
+  flex: 0 0 100%;
+}
+
+.kids-program__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 88px;
+  line-height: 1;
+  color: var(--color-dark);
+  padding: 0;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+.kids-program__nav.prev {
+  left: -18px;
+}
+
+.kids-program__nav.next {
+  right: -18px;
+}
+
+.kids-program__dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.kids-program__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.kids-program__dot.is-active {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.kids-program__frame {
+  background: var(--programacoes-bg, var(--color-primary));
+  border-radius: 28px;
+  padding: 28px;
+}
+
+.kids-program__title {
+  margin: 0 0 18px 0;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(24px, 3.2vw, 44px);
+  letter-spacing: 1px;
+  color: var(--color-light);
+  text-transform: uppercase;
+  -webkit-text-stroke: calc(var(--text-stroke-width) * 1) var(--color-dark);
+  text-shadow: 3px 3px 0 var(--color-dark);
+}
+
+.kids-program__list {
+  background: var(--color-light);
+  border: 2px solid var(--color-dark);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.kids-program__item + .kids-program__item {
+  border-top: 2px solid var(--color-dark);
+}
+
+.kids-program__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--color-dark);
+  text-align: left;
+}
+
+.kids-program__icon {
+  width: 18px;
+  flex: 0 0 18px;
+  color: var(--programacoes-bg, var(--color-primary));
+  font-weight: 900;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.kids-program__content[hidden] {
+  display: none;
+}
+
+.kids-program__inner {
+  padding: 0 18px 16px 48px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-dark);
+}
+
+.kids-program__inner p {
+  margin: 0;
+}
+
+.kids-program__schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kids-program__schedule-item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.kids-program__schedule-time {
+  font-weight: 900;
+  width: 72px;
+  flex: 0 0 72px;
+}
+
+.kids-program__schedule-empty {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .kids-program {
+    padding: 32px 14px;
+  }
+
+  .kids-program__nav {
+    font-size: 64px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .kids-program__nav.prev {
+    left: -12px;
+  }
+
+  .kids-program__nav.next {
+    right: -12px;
+  }
+
+  .kids-program__frame {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .kids-program__trigger {
+    padding: 14px 14px;
+    font-size: 16px;
+  }
+
+  .kids-program__inner {
+    padding: 0 14px 14px 40px;
+  }
+}

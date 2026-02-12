@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projetos — Painel Corporativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root{--bg:#0c111b;--bg-alt:#0f1421;--card:#151922;--text:#e5e7eb;--muted:#94a3b8;--border:#232836;--primary:#7c3aed;--primary-2:#22d3ee;--danger:#ef4444;--radius:14px}
+        *{box-sizing:border-box}
+        body{margin:0;background:radial-gradient(1200px 600px at 0% 0%, rgba(124,58,237,0.12), transparent 60%),radial-gradient(800px 500px at 100% 100%, rgba(34,211,238,0.12), transparent 50%),linear-gradient(180deg, var(--bg), var(--bg-alt));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+        .shell{max-width:1200px;margin:0 auto;padding:24px}
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .title{display:flex;align-items:center;gap:12px}
+        .title h1{margin:0;font-size:24px;font-weight:600}
+        .subtitle{color:var(--muted);font-size:13px}
+        .user{display:flex;align-items:center;gap:10px}
+        .logout{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+        .actions{display:flex;gap:12px;align-items:center;margin:20px 0 8px 0;flex-wrap:wrap}
+        .search{position:relative;flex:1;min-width:240px}
+        .search input{width:100%;padding:12px 14px 12px 40px;border-radius:12px;border:1px solid var(--border);background:#0f1523;color:var(--text);outline:none}
+        .search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8a93a6}
+        .filters{display:flex;gap:10px}
+        .filters select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0f1523;color:var(--text);cursor:pointer}
+        .view-toggle{display:flex;gap:8px;background:#0f1523;border:1px solid var(--border);border-radius:12px;padding:4px}
+        .view-btn{padding:8px 12px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer}
+        .view-btn.active{color:#fff;background:#1a2030}
+        .new-project{margin-left:auto;background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;box-shadow:0 0 0 3px rgba(124,58,237,0.2),0 12px 36px rgba(124,58,237,0.35)}
+        .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
+        @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:640px){.grid{grid-template-columns:1fr}}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 16px 40px rgba(0,0,0,0.35);padding:16px;position:relative;min-height:160px;display:flex;flex-direction:column;gap:8px;transition:transform .15s ease,box-shadow .2s ease}
+        .card:hover{transform:translateY(-2px);box-shadow:0 20px 56px rgba(0,0,0,0.45)}
+        .status{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;text-transform:capitalize}
+        .status.rascunho{background:#1f2937;color:#93c5fd}
+        .status.publicado{background:#0f5132;color:#86efac}
+        .status.finalizado{background:#3f3f1f;color:#fde68a}
+        .actions-mini{position:absolute;top:12px;right:12px;display:flex;gap:8px}
+        .mini-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:#0f1523;color:#cbd5e1;cursor:pointer}
+        .card-title{font-weight:600}
+        .meta{color:var(--muted);font-size:12px}
+        .status-select-mini{position:absolute;bottom:12px;right:12px;background:#0f1523;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px}
+        .add{border:1px dashed var(--border);background:transparent;display:flex;align-items:center;justify-content:center;gap:8px;color:#cbd5e1}
+        .loading{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+        .sk{background:#121826;border:1px solid var(--border);border-radius:var(--radius);height:160px;animation:pulse 1.2s ease-in-out infinite}
+        @keyframes pulse{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+        .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px}
+        .table-wrap{margin-top:16px;border:1px solid var(--border);border-radius:12px;overflow:auto}
+        table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);color:var(--text)}
+        th,td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px}
+        th{text-align:left;background:#121826;position:sticky;top:0}
+        .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000}
+        .modal-content{width:100%;max-width:520px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.35);padding:20px}
+        .modal-title{font-size:18px;font-weight:600;margin:0 0 12px 0}
+        .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+        .field input,.field textarea,.field select{background:#0f1523;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);outline:none}
+        .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+        .btn{border:none;border-radius:10px;padding:10px 12px;cursor:pointer}
+        .btn-primary{background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.2)}
+        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .error-msg{color:var(--danger);font-size:12px;min-height:18px}
+        .field input.error{border-color:var(--danger)}
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="header">
+            <div class="title">
+                <i class="fa-solid fa-layer-group" style="color: var(--primary); font-size: 20px;"></i>
+                <div>
+                    <h1>Projetos</h1>
+                    <div class="subtitle">Gerencie os sites e layouts corporativos</div>
+                </div>
+            </div>
+            <div class="user">
+                <span id="user-email">Carregando...</span>
+                <button class="logout" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="search-input" type="text" placeholder="Buscar projeto...">
+            </div>
+            <div class="filters">
+                <select id="filter-month">
+                    <option value="">Todos os meses</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+                <select id="filter-year">
+                    <option value="">Todos os anos</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+                <select id="filter-status">
+                    <option value="">Todos os status</option>
+                    <option value="rascunho">Rascunho</option>
+                    <option value="publicado">Publicado</option>
+                    <option value="finalizado">Finalizado</option>
+                </select>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" id="view-cards">Cards</button>
+                <button class="view-btn" id="view-table">Tabela</button>
+            </div>
+            <button class="new-project" id="new-project-btn"><i class="fa-solid fa-plus"></i> Novo Projeto</button>
+        </div>
+        <div id="projects-grid" class="grid"></div>
+        <div id="projects-table-wrap" class="table-wrap" style="display:none">
+            <table id="projects-table">
+                <thead>
+                    <tr>
+                        <th>Projeto</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Última edição</th>
+                        <th>Data criação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="projects-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-title">Criar novo projeto</div>
+            <form id="create-form">
+                <div class="field">
+                    <label for="project-name">Nome do projeto</label>
+                    <input id="project-name" type="text" required>
+                </div>
+                <div class="field">
+                    <label for="project-client">Cliente</label>
+                    <input id="project-client" type="text">
+                </div>
+                <div class="field">
+                    <label for="project-type">Tipo de layout</label>
+                    <select id="project-type">
+                        <option value="">Selecionar</option>
+                        <option value="landing">Landing</option>
+                        <option value="institucional">Institucional</option>
+                        <option value="ecommerce">E-commerce</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="project-notes">Observações</label>
+                    <textarea id="project-notes" rows="3"></textarea>
+                </div>
+                <div class="field">
+                    <label for="project-assets">Upload de assets</label>
+                    <input id="project-assets" type="file" multiple>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="cancel-create">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-create">Criar projeto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="rename-modal">
+        <div class="modal-content">
+            <div class="modal-title">Renomear projeto</div>
+            <form id="rename-form">
+                <div class="field">
+                    <label for="rename-name">Novo nome</label>
+                    <input id="rename-name" type="text" required>
+                    <div id="rename-error" class="error-msg"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="cancel-rename">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-rename" disabled>Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../config/supabaseClient.js';
+
+        const grid = document.getElementById('projects-grid');
+        const tableWrap = document.getElementById('projects-table-wrap');
+        const tbody = document.getElementById('projects-tbody');
+        const userEmailSpan = document.getElementById('user-email');
+        const logoutBtn = document.getElementById('logout-btn');
+        const searchInput = document.getElementById('search-input');
+        const filterMonth = document.getElementById('filter-month');
+        const filterYear = document.getElementById('filter-year');
+        const filterStatus = document.getElementById('filter-status');
+        const viewCardsBtn = document.getElementById('view-cards');
+        const viewTableBtn = document.getElementById('view-table');
+        const newProjectBtn = document.getElementById('new-project-btn');
+        const modal = document.getElementById('create-modal');
+        const createForm = document.getElementById('create-form');
+        const cancelCreate = document.getElementById('cancel-create');
+        const renameModal = document.getElementById('rename-modal');
+        const renameForm = document.getElementById('rename-form');
+        const renameNameInput = document.getElementById('rename-name');
+        const cancelRename = document.getElementById('cancel-rename');
+        const renameError = document.getElementById('rename-error');
+        const confirmRenameBtn = document.getElementById('confirm-rename');
+
+        let allProjects = [];
+        let viewMode = 'cards';
+
+        // Buscar nome do perfil
+        async function getProfileName(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', userId)
+                    .single();
+                
+                if (data && data.full_name) return data.full_name;
+            } catch (e) {
+                console.warn('Erro ao buscar perfil:', e);
+            }
+            return null;
+        }
+
+        // Verificar autenticação
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            const profileName = await getProfileName(session.user.id);
+            userEmailSpan.textContent = profileName || session.user.email;
+            
+            return session.user;
+        }
+
+        // Filtros e Busca
+        function applyFilters() { render(); }
+
+        searchInput.addEventListener('input', applyFilters);
+        filterMonth.addEventListener('change', applyFilters);
+        filterYear.addEventListener('change', applyFilters);
+        filterStatus.addEventListener('change', applyFilters);
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        // Carregar projetos
+        function getMonthName(monthNumber) {
+            const months = [
+                'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+            ];
+            return months[monthNumber - 1] || '---';
+        }
+
+        async function loadProjects() {
+            const user = await checkAuth();
+            if (!user) return;
+
+            const { data: projects, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('event_year', { ascending: true })
+                .order('event_month', { ascending: true })
+                .order('name', { ascending: true });
+
+            if (error) {
+                console.error('Erro ao carregar projetos:', error);
+                let errorMsg = 'Erro ao carregar projetos. Tente recarregar a página.';
+                
+                // Se o erro for de tabela inexistente (comum se não rodou o SQL)
+                 if (error.code === '42P01' || error.code === 'PGRST205') {
+                     errorMsg = `
+                         <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+                             <h3 style="color: #c53030; margin-top: 0;">Sincronização Necessária</h3>
+                             <p>A tabela "projects" não foi encontrada ou o banco de dados precisa ser atualizado.</p>
+                             <p><strong>Para resolver:</strong></p>
+                             <ol style="text-align: left; display: inline-block;">
+                                <li>Vá ao <strong>SQL Editor</strong> do Supabase</li>
+                                <li>Copie o conteúdo de <code>supabase_setup.sql</code> e execute</li>
+                                <li>Copie o conteúdo de <code>supabase_migration_projects.sql</code> e execute</li>
+                             </ol>
+                             <br>
+                             <button onclick="location.reload()" class="btn-logout" style="background: var(--color-primary); margin-top: 10px;">Já executei, recarregar</button>
+                         </div>
+                     `;
+                 } else {
+                     errorMsg = `
+                        <div class="empty-state">
+                            ${errorMsg}<br>
+                            <small style="color: #999; display: block; margin-top: 10px;">Erro técnico: ${error.message}</small>
+                            <button onclick="console.log(window.lastSupabaseError); alert('Erro detalhado copiado para o console (F12)')" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; font-size: 11px; margin-top: 10px; cursor: pointer;">Ver detalhes no console</button>
+                        </div>
+                     `;
+                     window.lastSupabaseError = error;
+                 }
+                
+                grid.innerHTML = errorMsg;
+                return;
+            }
+
+            allProjects = projects || [];
+            render();
+        }
+
+        function renderCards(projectsToRender){
+            grid.innerHTML = '';
+
+            if (!projectsToRender || projectsToRender.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty';
+                empty.innerHTML = `Nenhum projeto criado ainda<br><br><button class="new-project" id="empty-create">Criar primeiro projeto</button>`;
+                grid.appendChild(empty);
+                const btn = empty.querySelector('#empty-create');
+                btn.addEventListener('click', openCreateModal);
+            }
+            projectsToRender && projectsToRender.forEach(project=>{
+                const status = project.status || 'rascunho';
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="actions-mini">
+                        <button class="mini-btn" data-action="rename" data-id="${project.id}" data-name="${project.name}"><i class="fa-solid fa-pen"></i></button>
+                        <button class="mini-btn" data-action="delete" data-id="${project.id}"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <a href="index.html?id=${project.id}" style="color:inherit;text-decoration:none">
+                        <div class="card-title">${project.name || 'Projeto'}</div>
+                    </a>
+                    <select class="status-select-mini" data-id="${project.id}">
+                        <option value="rascunho" ${status==='rascunho'?'selected':''}>Rascunho</option>
+                        <option value="publicado" ${status==='publicado'?'selected':''}>Publicado</option>
+                        <option value="finalizado" ${status==='finalizado'?'selected':''}>Finalizado</option>
+                    </select>
+                `;
+                const statusSelect = card.querySelector('.status-select-mini');
+                statusSelect.addEventListener('click', e=>e.stopPropagation());
+                statusSelect.addEventListener('change', async e=>{await updateProjectStatus(project.id, e.target.value)});
+                const renameBtn = card.querySelector('[data-action="rename"]');
+                renameBtn.addEventListener('click', async e=>{
+                    e.stopPropagation();e.preventDefault();
+                    openRenameModal(project.id, renameBtn.dataset.name);
+                });
+                const deleteBtn = card.querySelector('[data-action="delete"]');
+                deleteBtn.addEventListener('click', async e=>{
+                    e.stopPropagation();e.preventDefault();
+                    if (confirm('Excluir projeto?')) await deleteProject(project.id);
+                });
+                grid.appendChild(card);
+            });
+            const add = document.createElement('div');
+            add.className = 'card add';
+            add.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Projeto`;
+            add.addEventListener('click', openCreateModal);
+            grid.appendChild(add);
+        }
+        function renderTable(projectsToRender){
+            tbody.innerHTML = '';
+            if (!projectsToRender || projectsToRender.length===0){
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted)">Nenhum projeto</td></tr>`;
+                return;
+            }
+            projectsToRender.forEach(project=>{
+                const status = project.status || 'rascunho';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><a href="index.html?id=${project.id}" style="color:inherit;text-decoration:none">${project.name || 'Projeto'}</a></td>
+                    <td>—</td>
+                    <td><span class="status ${status}">${status}</span></td>
+                    <td>${project.updated_at ? new Date(project.updated_at).toLocaleDateString() : '—'}</td>
+                    <td>${project.created_at ? new Date(project.created_at).toLocaleDateString() : '—'}</td>
+                    <td>
+                        <button class="mini-btn" data-action="rename" data-id="${project.id}" data-name="${project.name}"><i class="fa-solid fa-pen"></i></button>
+                        <button class="mini-btn" data-action="delete" data-id="${project.id}"><i class="fa-solid fa-trash"></i></button>
+                        <select class="status-select-mini" data-id="${project.id}">
+                            <option value="rascunho" ${status==='rascunho'?'selected':''}>Rascunho</option>
+                            <option value="publicado" ${status==='publicado'?'selected':''}>Publicado</option>
+                            <option value="finalizado" ${status==='finalizado'?'selected':''}>Finalizado</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+                const statusSelect = tr.querySelector('.status-select-mini');
+                statusSelect.addEventListener('change', async e=>{await updateProjectStatus(project.id, e.target.value)});
+                const renameBtn = tr.querySelector('[data-action="rename"]');
+                renameBtn.addEventListener('click', async ()=>{
+                    openRenameModal(project.id, renameBtn.dataset.name);
+                });
+                const deleteBtn = tr.querySelector('[data-action="delete"]');
+                deleteBtn.addEventListener('click', async ()=>{
+                    if (confirm('Excluir projeto?')) await deleteProject(project.id);
+                });
+            });
+        }
+        function render(){
+            const filtered = filterProjects();
+            if (viewMode==='cards'){
+                tableWrap.style.display = 'none';
+                renderCards(filtered);
+            } else {
+                tableWrap.style.display = 'block';
+                grid.innerHTML = '';
+                renderTable(filtered);
+            }
+        }
+
+        function filterProjects(){
+            const searchTerm = searchInput.value.toLowerCase();
+            const monthValue = filterMonth.value;
+            const yearValue = filterYear.value;
+            const statusValue = filterStatus.value;
+            return (allProjects||[]).filter(project=>{
+                const matchesSearch = (project.name||'').toLowerCase().includes(searchTerm);
+                const matchesMonth = monthValue === "" || project.event_month === parseInt(monthValue);
+                const matchesYear = yearValue === "" || project.event_year === parseInt(yearValue);
+                const matchesStatus = statusValue === "" || project.status === statusValue;
+                return matchesSearch && matchesMonth && matchesYear && matchesStatus;
+            });
+        }
+        function openCreateModal(){ modal.style.display = 'flex'; }
+        function closeCreateModal(){ modal.style.display = 'none'; createForm.reset(); }
+        function openRenameModal(id, currentName){
+            renameModal.style.display = 'flex';
+            renameForm.dataset.id = String(id);
+            renameNameInput.value = currentName || '';
+            setTimeout(()=>{ renameNameInput.focus(); renameNameInput.select(); }, 0);
+            validateRenameName();
+        }
+        function closeRenameModal(){
+            renameModal.style.display = 'none';
+            renameForm.removeAttribute('data-id');
+            renameForm.reset();
+            renameError.textContent = '';
+            renameNameInput.classList.remove('error');
+            confirmRenameBtn.disabled = true;
+        }
+        function validateRenameName(){
+            const id = renameForm.dataset.id;
+            const value = (renameNameInput.value||'').trim();
+            let message = '';
+            if (value.length < 2){ message = 'Informe pelo menos 2 caracteres'; }
+            const dup = (allProjects||[]).some(p => String(p.id)!==String(id) && (p.name||'').trim().toLowerCase()===value.toLowerCase());
+            if (!message && dup){ message = 'Já existe um projeto com esse nome'; }
+            renameError.textContent = message;
+            if (message){
+                renameNameInput.classList.add('error');
+                confirmRenameBtn.disabled = true;
+                return false;
+            } else {
+                renameNameInput.classList.remove('error');
+                confirmRenameBtn.disabled = false;
+                return true;
+            }
+        }
+        renameNameInput.addEventListener('input', validateRenameName);
+        createForm.addEventListener('submit', async e=>{
+            e.preventDefault();
+            const name = document.getElementById('project-name').value;
+            const client = document.getElementById('project-client').value;
+            const type = document.getElementById('project-type').value;
+            const notes = document.getElementById('project-notes').value;
+            const files = Array.from(document.getElementById('project-assets').files||[]);
+            const user = await checkAuth();
+            const { data: created, error } = await supabase
+                .from('projects')
+                .insert([{ name, user_id: user.id }])
+                .select();
+            if (error){ alert('Erro ao criar projeto: '+error.message); return; }
+            const project = created[0];
+            try{
+                const meta = { client, type, notes };
+                await supabase.from('site_settings').insert({ project_id: project.id, setting_name: 'project_meta', setting_value: meta });
+            }catch(e){}
+            if (files.length){
+                try{
+                    for (const f of files){
+                        const path = `projects/${project.id}/${Date.now()}-${f.name}`;
+                        await supabase.storage.from('site-assets').upload(path, f);
+                    }
+                }catch(e){}
+            }
+            closeCreateModal();
+            loadProjects();
+        });
+        cancelCreate.addEventListener('click', closeCreateModal);
+        newProjectBtn.addEventListener('click', openCreateModal);
+        cancelRename.addEventListener('click', closeRenameModal);
+        renameForm.addEventListener('submit', async e=>{
+            e.preventDefault();
+            const id = renameForm.dataset.id;
+            const newName = renameNameInput.value.trim();
+            if (!id || !newName || !validateRenameName()) { return; }
+            await renameProject(id, newName);
+            closeRenameModal();
+        });
+        viewCardsBtn.addEventListener('click', ()=>{ viewMode='cards'; viewCardsBtn.classList.add('active'); viewTableBtn.classList.remove('active'); render(); });
+        viewTableBtn.addEventListener('click', ()=>{ viewMode='table'; viewTableBtn.classList.add('active'); viewCardsBtn.classList.remove('active'); render(); });
+        
+        async function renameProject(id, newName) {
+            const { error } = await supabase
+                .from('projects')
+                .update({ name: newName, updated_at: new Date().toISOString() })
+                .eq('id', id);
+
+            if (error) {
+                alert('Erro ao renomear: ' + error.message);
+            } else {
+                const { data: { session } } = await supabase.auth.getSession();
+                await logActivity(id, session?.user?.id, 'update', { 
+                    message: `Projeto renomeado para: ${newName}` 
+                });
+                loadProjects();
+            }
+        }
+
+        async function deleteProject(id) {
+            const { error: settingsError } = await supabase
+                .from('site_settings')
+                .delete()
+                .eq('project_id', id);
+                
+            if (settingsError) {
+                alert('Erro ao excluir configurações do projeto: ' + settingsError.message);
+                return;
+            }
+
+            const { error } = await supabase
+                .from('projects')
+                .delete()
+                .eq('id', id);
+                
+            if (error) {
+                alert('Erro ao excluir: ' + error.message);
+            } else {
+                // Não conseguimos logar o delete do projeto na tabela audit_logs 
+                // se ela tiver FK com cascade delete, pois o projeto sumiu.
+                // Mas o log de sistema do Supabase resolve isso.
+                loadProjects();
+            }
+        }
+
+        async function updateProjectStatus(id, newStatus) {
+            const { error } = await supabase
+                .from('projects')
+                .update({ status: newStatus, updated_at: new Date().toISOString() })
+                .eq('id', id);
+
+            if (error) {
+                if ((error.message || '').includes("Could not find the 'status' column")) {
+                    alert(
+                        "Seu banco ainda não tem a coluna 'status' (ou o cache de schema do Supabase não atualizou).\n\n" +
+                        "No Supabase (SQL Editor), execute o arquivo supabase_updates_v2.sql e depois recarregue o schema (o script já inclui isso).\n\n" +
+                        "Depois recarregue esta página."
+                    );
+                    return;
+                }
+                alert('Erro ao atualizar status: ' + error.message);
+            } else {
+                const { data: { session } } = await supabase.auth.getSession();
+                await logActivity(id, session?.user?.id, 'status_change', { 
+                    message: `Status alterado para: ${newStatus}`,
+                    status: newStatus
+                });
+                loadProjects();
+            }
+        }
+
+        async function logActivity(projectId, userId, action, details) {
+            try {
+                await supabase.from('audit_logs').insert({
+                    project_id: projectId,
+                    user_id: userId,
+                    action: action,
+                    details: details
+                });
+            } catch (e) {
+                console.warn('Erro ao salvar log:', e);
+            }
+        }
+
+        async function generateInitialProjects() {
+            const user = await checkAuth();
+            
+            // Primeiro projeto: Carna Village
+            const projectsToCreate = [
+                { name: 'Carna Village', user_id: user.id }
+            ];
+
+            // Outros 11 projetos genéricos
+            for (let i = 2; i <= 12; i++) {
+                projectsToCreate.push({ name: `Projeto ${i}`, user_id: user.id });
+            }
+
+            const { data: newProjects, error } = await supabase
+                .from('projects')
+                .insert(projectsToCreate)
+                .select();
+
+            if (error) {
+                alert('Erro ao gerar projetos: ' + error.message);
+            } else {
+                // Após criar os projetos, vamos inicializar o 'Carna Village' com a config local
+                const carnaProject = newProjects.find(p => p.name === 'Carna Village');
+                if (carnaProject) {
+                    try {
+                        const response = await fetch('../config/config.json');
+                        const defaultConfig = await response.json();
+                        
+                        await supabase
+                            .from('site_settings')
+                            .insert({
+                                project_id: carnaProject.id,
+                                setting_name: 'main_config',
+                                setting_value: defaultConfig
+                            });
+                    } catch (e) {
+                        console.error('Erro ao inicializar config do Carna Village:', e);
+                    }
+                }
+                loadProjects();
+            }
+        }
+
+        loadProjects();
+    </script>
+</body>
+</html>

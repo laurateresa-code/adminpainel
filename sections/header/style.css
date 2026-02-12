@@ -1,0 +1,80 @@
+
+/* Header styles */
+.site-header {
+  /* Position handled in global styles.css */
+  width: 100%;
+  z-index: 100;
+  padding: 20px 0;
+}
+
+.header__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand img {
+  height: 60px; /* Adjust based on logo */
+  width: auto;
+  display: block;
+}
+
+/* Themeable Logo - REMOVED to allow JS to control src */
+/* .logo-img { content: var(--logo-image); } */
+
+/* .site-nav { Navigation styles } */
+
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.menu a {
+  text-decoration: none;
+  color: var(--color-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.menu a:hover {
+  color: var(--color-yellow);
+}
+
+.nav-toggle {
+  display: none;
+}
+
+/* Mobile Menu */
+@media (max-width: 900px) {
+  .nav-toggle {
+    display: block;
+    background: transparent;
+    border: none;
+    color: var(--color-light);
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .menu {
+    display: none; /* Hidden by default on mobile, toggled via JS */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--color-primary);
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .menu.is-active {
+    display: flex;
+  }
+}

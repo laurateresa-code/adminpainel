@@ -1,0 +1,155 @@
+{
+  "siteName": "Carna Village",
+  "siteTitle": "Village Retrô — Uma viagem no tempo",
+  "siteDescription": "",
+  "colors": {
+    "primary": "#E91E63",
+    "primaryDark": "#c2185b",
+    "secondary": "#37d86a",
+    "accent": "#f4c64e",
+    "dark": "#0f0f10",
+    "light": "#ffffff",
+    "pink": "#ff0064",
+    "blue": "#2563eb",
+    "red": "#FF0000",
+    "bgMain": "#ffffff",
+    "bgSurface": "#f7f7f8",
+    "bgDark": "#fbc52c",
+    "bgAgenda": "#73c4b8",
+    "bgBadges": "#73c4b8",
+    "bgTripadvisor": "#f7f7f8",
+    "bgFeedback": "#73c4b8",
+    "frameBorder": "#000000"
+  },
+  "images": {
+    "logoMain": "assets/images/logo/logo.png",
+    "logoFooter": "assets/images/logo/logo.png",
+    "logoSvg": "assets/images/logo/herocarnaval.png",
+    "footerDivider": "assets/images/stickers/09 - Transição - Carna Village.png",
+    "bgHero": "assets/images/banners/herocarnaval.png",
+    "stickerDivider": "assets/images/stickers/03 - Transição - Carna Village.png",
+    "stickerVinylLeft": "assets/images/stickers/decor-vinil-esq.svg",
+    "stickerVinylRight": "assets/images/stickers/decor-vinil-dir.svg",
+    "stickerFlowerBl": "assets/images/stickers/decor-bolinha-esq.svg",
+    "stickerFlowerBr": "assets/images/stickers/decor-bolinha-dir.svg",
+    "stickerIcon1": "assets/images/stickers/allfun.carnaval.png",
+    "stickerIcon2": "assets/images/stickers/piscina.carnaval.png",
+    "stickerIcon3": "assets/images/stickers/recreacao.carnaval.png",
+    "stickerIcon4": "assets/images/stickers/pertinho.carnaval.png",
+    "galleryBenefit1": "assets/images/gallery/07 - Benefícios Principais 1 - Carna Village.png",
+    "galleryBenefit2": "assets/images/gallery/07 - Benefícios Principais 2 - Carna Village.png",
+    "galleryBenefit3": "assets/images/gallery/07 - Benefícios Principais 3 - Carna Village.png",
+    "mascots": "assets/images/stickers/05 - Moldura 1 - Carna Village.png",
+    "mascotsMobile": "assets/images/stickers/05 - Moldura 2 - Carna Village.png",
+    "carouselImg1": "assets/images/carousel/img-01.png",
+    "carouselImg2": "assets/images/carousel/img-02.png",
+    "carouselImg3": "assets/images/carousel/img-03.png",
+    "carouselImg4": "assets/images/carousel/img-04.png",
+    "carouselImg5": "assets/images/carousel/img-05.png",
+    "carouselImg6": "assets/images/carousel/img-06.png",
+    "carouselImg7": "assets/images/carousel/img-07.png",
+    "carouselImg8": "assets/images/carousel/img-08.png",
+    "carouselImg9": "assets/images/carousel/img-09.png",
+    "carouselImg10": "assets/images/carousel/img-10.png",
+    "carouselImg11": "assets/images/carousel/img-11.png",
+    "carouselImg12": "assets/images/carousel/img-12.png"
+  },
+  "text": {
+    "heroTitle": "CARNA VILLAGE",
+    "introTitle": "CARNAVAL SEM FIM NO ÚNICO RESORT ALL FUN INCLUSIVE DO BRASIL!",
+    "introDesc": "\nNo Village Resort, o Carnaval dura todo o mês de fevereiro com piscinas aquecidas, Praia Village, bares com cerveja premium à vontade e gastronomia completa do café da manhã ao luau noturno, tudo incluso no All Fun Inclusive, além de atividades para toda a família, recreação infantil e uma programação especial que garante comidas, bebidas e diversão sem limites no único All Fun Inclusive do Brasil.",
+    "galleryTitle": "VENHA VIVER O MELHOR DO CARNA VILLAGE!",
+    "highlightTitle": "CARNA VILLAGE COM MUITA DIVERSÃO, COMIDAS E BEBIDAS À VONTADE! ",
+    "agendaTitle": "SELECIONE O PERÍODO DA SUA RESERVA",
+    "feedbackTitleTop": "O QUE FALAM SOBRE O",
+    "feedbackTitleBottom": "VILLAGE RESORT?",
+    "framesPromoText": "TUDO ISSO E MUITO MAIS COM <span class='text-yellow'>VALOR PROMOCIONAL</span> NO ÚNICO ALL FUN INCLUSIVE DO BRASIL",
+    "framesTurmaTitle": "A TURMA DO BÊ, ESPERA POR VOCÊ!",
+    "framesTurmaSubtitle": "Recreação para todas as idades com diversas atividades para a família.",
+    "footerAddress": "Fazenda Coqueiral, 84 – Zona Rural, Jaboticatubas – MG",
+    "footerContact": "WhatsApp: (31) 9 8476-0195 / Telefone: (31) 3157-7573 / SAC: (31) 9 9705-6605",
+    "footerCopyright": "Village Resort © Todos os direitos reservados."
+  },
+  "pricing": {
+    "oldPrice": "R$2.504,04",
+    "newPrice": "R$1.626,00"
+  },
+  "agenda": {
+    "enabled": true,
+    "dayBgColor": "",
+    "month": "2",
+    "year": "2026"
+  },
+  "typography": {
+    "fontHeading": "Rubik, sans-serif",
+    "fontBody": "Rubik, sans-serif",
+    "sizeBase": "16px",
+    "sizeH1": "36px",
+    "sizeH2": "30px",
+    "textColor": "#000000",
+    "titleStrokeWidth": "1px",
+    "titleStrokeColor": "#0f0f10",
+    "colorH1": "#7216fe",
+    "colorH2": "#26a628",
+    "colorH3": "#f15bec",
+    "colorPrincipalTitle": "#ffffff",
+    "colorCalendarTitle": "#000000",
+    "colorFramesVar1": "#ffffff",
+    "colorFramesVar2": "#0d0d0d",
+    "colorFramesVar3": "#fbc52c",
+    "colorFeedbackTitle": "#ffffff",
+    "colorFeedbackAuthor": "#e91e63",
+    "colorGalleryTitle": "#fbc52c",
+    "colorIntroDesc": "#000000",
+    "colorIntroLabel": "#ffffff",
+    "colorTurmaSubtitle": "#ffffff",
+    "colorPromoHighlight": "#ff0000"
+  },
+  "frames": {
+    "borderColor": "#ff0064",
+    "borderWidth": "6px"
+  },
+  "variables": {
+    "programacaoInfantil": {
+      "enabled": false,
+      "position": "afterIntro"
+    },
+    "programacoes": {
+      "enabled": false,
+      "position": "afterIntro",
+      "bgColor": "",
+      "schedule": {
+        "infantil": {
+          "segunda": [],
+          "terca": [],
+          "quarta": [],
+          "quinta": [],
+          "sexta": [],
+          "sabado": [],
+          "domingo": []
+        },
+        "teens": {
+          "segunda": [],
+          "terca": [],
+          "quarta": [],
+          "quinta": [],
+          "sexta": [],
+          "sabado": [],
+          "domingo": []
+        },
+        "adulta": {
+          "segunda": [],
+          "terca": [],
+          "quarta": [],
+          "quinta": [],
+          "sexta": [],
+          "sabado": [],
+          "domingo": []
+        }
+      }
+    }
+  },
+  "video": {
+    "youtubeEmbed": "https://www.youtube.com/watch?v=L9Nsm6vgw50"
+  }
+}

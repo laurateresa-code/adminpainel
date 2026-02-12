@@ -1,0 +1,136 @@
+@font-face {
+  font-family: 'Marlin Soft SQ Extra Black';
+  src: url('../fonts/MarlinSoftSQ-ExtraBlack.otf') format('opentype'),
+       url('../fonts/MarlinSoftSQ-ExtraBlack.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* --- PALETA DE CORES --- */
+  --color-primary: #E91E63;       /* Rosa Principal */
+  --color-primary-dark: #c2185b;  /* Variação Escura */
+  --color-secondary: #37d86a;     /* Verde */
+  --color-accent: #f4c64e;        /* Amarelo */
+  --color-dark: #0f0f10;          /* Preto/Escuro */
+  --color-light: #ffffff;         /* Branco */
+  --color-pink: #ff0064;          /* Rosa Marca Específico */
+  --color-blue: #2563eb;          /* Azul */
+  --color-red: #FF0000;           /* Vermelho Chamativo */
+  --color-red-dark: #cc0000;      /* Vermelho Escuro */
+  --color-pink-light: #fff0f5;    /* Rosa Claro (Agenda) */
+  --color-dark-soft: #121213;     /* Preto Suave (Bandas, FAQ) */
+  --color-dark-card: #1b1b1d;     /* Card Escuro (Início Gradiente) */
+  --color-dark-card-2: #141416;   /* Card Escuro (Fim Gradiente) */
+  --color-text-highlight: #ffd7e4; /* Texto Destaque (Preço "A partir") */
+  --color-text-strike: #ff7f9f;    /* Texto Riscado (Preço antigo) */
+  --color-calendar-text: #5a4a10;  /* Texto Calendário */
+  --color-calendar-day-bg: #fffaf0; /* Fundo Dia Calendário */
+  --color-calendar-border: #e2c66f; /* Borda Calendário */
+  --color-calendar-day-text: #2b2100; /* Texto Dia Calendário */
+  --color-calendar-hover-bg: #ffe3ef; /* Hover Dia Calendário */
+  --color-calendar-qty-bg: #fff8e1; /* Fundo Qtd Calendário */
+  --color-disabled-day-bg: #2b2b2e; /* Fundo Dia Desabilitado */
+  --color-disabled-day-text: #b8b8be; /* Texto Dia Desabilitado */
+  --color-disabled-day-border: #888; /* Borda Dia Desabilitado */
+  --color-gallery-card-bg: #000;    /* Fundo Card Galeria */
+
+  /* Cores de Texto */
+  --text-color: #1f2937;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+  --text-dark: #0f0f10;
+  --text-color-light-gray: #e6e6e6; /* Texto Cinza Claro (FAQ Panel) */
+
+  /* Backgrounds */
+  --bg-main: #ffffff;
+  --bg-surface: #f7f7f8;
+  --bg-dark: #0f0f10;
+  --bg-secondary: #37d86a;
+  --bg-transparent: transparent;
+  --bg-disabled: #bdbdbd;
+
+  /* Bordas e Sombras */
+  --border-color: #e5e7eb;
+  --frame-border-color: transparent;
+  --frame-border-width: 0px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-hero: 0 16px 28px rgba(0,0,0,.45);
+  --shadow-card: 0 12px 24px rgba(0,0,0,.35);
+  --shadow-btn: 0 8px 25px rgba(255, 0, 85, .35);
+
+  /* Tipografia */
+  --font-base: "Rubik", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-heading: 'Rubik', sans-serif;
+  --font-size-base: 16px;
+  --h1-size: 36px;
+  --h2-size: 30px;
+  
+  /* Configurações avançadas de tipografia */
+  --text-stroke-width: 1px;
+  --text-stroke-color: var(--color-dark);
+  --h1-color: var(--color-primary);
+  --h2-color: var(--color-pink);
+  --h3-color: var(--color-secondary);
+
+  /* Botões */
+  --btn-radius: 8px;
+  --btn-pill-radius: 50px;
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-text: var(--color-light);
+  --btn-secondary-bg: var(--color-secondary);
+  --btn-secondary-text: var(--color-dark);
+  --btn-accent-bg: var(--color-accent);
+  --btn-accent-text: #2b2100;
+  --btn-yellow-bg: #f4c64e;
+  --btn-yellow-text: #2b2100;
+  
+  /* Gradientes */
+  --gradient-btn-highlight: linear-gradient(90deg, #ff2e7a, #ff0055);
+  --gradient-hero-overlay: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6));
+
+  /* --- IMAGENS E ASSETS (Design Tokens) --- */
+  /* Ajustar caminhos conforme a estrutura final */
+  /* Logos */
+  --logo-main: url('../images/logo/logo.png');
+  --logo-footer: url('../images/logo/logo.png');
+
+  /* Banners */
+  --bg-hero: url('../images/banners/hero.svg');
+  
+  /* Stickers / Decorações */
+  --sticker-divider: url('../images/stickers/divider.png');
+  --sticker-vinyl-left: url('../images/stickers/decor-vinil-esq.svg');
+  --sticker-vinyl-right: url('../images/stickers/decor-vinil-dir.svg');
+  --sticker-flower-bl: url('../images/stickers/decor-bolinha-esq.svg');
+  --sticker-flower-br: url('../images/stickers/decor-bolinha-dir.svg');
+  
+  /* Layout */
+  --container-width: 1100px;
+  --header-height: 70px;
+  --hero-card-w: 340px;
+  --hero-card-h: 120px;
+  --countdown-h: 72px;
+  /* Badges */
+  --bg-badges: #f4c64e;
+
+  /* Logo */
+  --logo-image: url('../images/logo/logo.svg');
+
+  /* Icons & Mascots */
+  --icon-1: url('../images/stickers/icon-01.png');
+  --icon-2: url('../images/stickers/icon-02.png');
+  --icon-3: url('../images/stickers/icon-03.png');
+  --icon-4: url('../images/stickers/icon-04.png');
+  --mascots-desktop: url('../images/stickers/mascots.png');
+  --mascots-mobile: url('../images/stickers/mascots-mobile.png');
+  --video-thumb: url('../images/stickers/video-thumb.webp');
+  
+  /* Gallery Images */
+  --gallery-img-1: url('../images/gallery/benefit-01.png');
+  --gallery-img-2: url('../images/gallery/benefit-02.png');
+  --gallery-img-3: url('../images/gallery/benefit-03.png');
+}
