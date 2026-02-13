@@ -1,14 +1,14 @@
 :root {
-  --primary: #7c3aed;
-  --primary-hover: #6d28d9;
-  --primary-2: #22d3ee;
-  --bg-admin: #0f1115;
-  --bg-sidebar: #121826;
+  --primary: #45D3C0;
+  --primary-hover: #36BFAE;
+  --primary-2: #FCC62C;
+  --bg-admin: #1b2438;
+  --bg-sidebar: #20293f;
   --text-sidebar: #cbd5e1;
   --text-main: #e5e7eb;
   --text-muted: #94a3b8;
-  --border: #232836;
-  --card-bg: #151922;
+  --border: #38425f;
+  --card-bg: #20293f;
   --radius: 12px;
   --shadow: 0 20px 60px rgba(0,0,0,0.35);
   --success: #10b981;
@@ -24,9 +24,9 @@ body {
   margin: 0;
   font-family: 'Inter', sans-serif;
   background:
-    radial-gradient(1200px 600px at 0% 0%, rgba(124,58,237,0.12), transparent 60%),
-    radial-gradient(800px 500px at 100% 100%, rgba(34,211,238,0.12), transparent 50%),
-    linear-gradient(180deg, var(--bg-admin), #0f1421);
+    radial-gradient(1200px 600px at 0% 0%, rgba(252,198,44,0.12), transparent 60%),
+    radial-gradient(800px 500px at 100% 100%, rgba(69,211,192,0.12), transparent 50%),
+    linear-gradient(180deg, var(--bg-admin), #26324F);
   color: var(--text-main);
   height: 100vh;
   overflow: hidden;
@@ -94,7 +94,7 @@ body {
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  box-shadow: 0 0 0 3px rgba(69,211,192,0.18);
 }
 
 .nav-item.active {
@@ -180,7 +180,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid rgba(124,58,237,0.5);
+  border: 1px solid rgba(69,211,192,0.45);
   background: radial-gradient(100% 100% at 50% 0%, #1b2133 0%, #0f1523 100%);
   color: #e5e7eb;
   display: grid;
@@ -188,7 +188,7 @@ body {
   font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  box-shadow: 0 0 0 3px rgba(69,211,192,0.18);
 }
 .topbar .avatar.visible { opacity: 1; }
 .popover {
@@ -302,8 +302,8 @@ input[type="number"]:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: rgba(124,58,237,0.6);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  border-color: rgba(69,211,192,0.6);
+  box-shadow: 0 0 0 3px rgba(69,211,192,0.18);
 }
 
 textarea {
@@ -396,8 +396,8 @@ input[type="file"] {
 }
 
 .btn-upload:hover {
-  border-color: rgba(124,58,237,0.5);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  border-color: rgba(69,211,192,0.5);
+  box-shadow: 0 0 0 3px rgba(69,211,192,0.18);
 }
 
 /* Buttons */

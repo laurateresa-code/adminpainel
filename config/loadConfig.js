@@ -203,8 +203,21 @@ function applyColors(colors) {
     if (key === 'bgTripadvisor') cssVar = '--bg-tripadvisor';
     if (key === 'bgFeedback') cssVar = '--bg-feedback';
     if (key === 'bgAgenda') cssVar = '--bg-agenda';
+    if (key === 'bgIntro') cssVar = '--bg-intro';
+    if (key === 'btnIntroBg') cssVar = '--btn-intro-bg';
+    if (key === 'btnRecreacao1Bg') cssVar = '--btn-recreacao-1-bg';
+    if (key === 'btnRecreacao2Bg') cssVar = '--btn-recreacao-2-bg';
+    if (key === 'btnFooterBg') cssVar = '--btn-footer-bg';
+    if (key === 'btnIntroText') cssVar = '--btn-intro-text';
+    if (key === 'btnRecreacao1Text') cssVar = '--btn-recreacao-1-text';
+    if (key === 'btnRecreacao2Text') cssVar = '--btn-recreacao-2-text';
+    if (key === 'btnFooterText') cssVar = '--btn-footer-text';
     
     root.style.setProperty(cssVar, value);
+
+    if (key === 'bgDark') {
+      root.style.setProperty('--bg-footer-dark', value);
+    }
   }
 }
 

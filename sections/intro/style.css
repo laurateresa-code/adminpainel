@@ -2,7 +2,7 @@
    INTRO SECTION (Black/Yellow)
 ========================= */
 .intro {
-  background-color: #FBC52B;
+  background-color: var(--bg-intro, #FBC52B);
   color: var(--color-dark);
   padding: 64px 20px;
   text-align: center;
@@ -24,7 +24,7 @@
   font-size: 44px;
   line-height: 1.12;
   text-transform: uppercase;
-  color: var(--color-light);
+  color: var(--color-principal-title, var(--color-light));
   -webkit-text-stroke: calc(var(--text-stroke-width) * 2) var(--color-dark);
   paint-order: stroke fill;
   text-shadow: 3px 3px 0 var(--color-dark);
@@ -222,8 +222,8 @@
 
 /* BOTÃO DE ALERTA (URGÊNCIA) */
 .intro__alert-btn {
-  background-color: var(--color-red) !important; 
-  color: var(--color-light);
+  background-color: var(--btn-intro-bg, var(--color-red)) !important; 
+  color: var(--btn-intro-text, var(--color-light));
   font-size: 16px;
   font-weight: 800;
   padding: 16px 32px;

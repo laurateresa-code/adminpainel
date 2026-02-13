@@ -446,8 +446,8 @@
 
 /* Button override for this section - Adjusted to match theme standard */
 .action-wrapper .btn-large {
-  background: var(--color-pink);
-  color: var(--color-light);
+  background: var(--btn-recreacao-1-bg, var(--btn-primary-bg));
+  color: var(--btn-recreacao-1-text, var(--btn-primary-text));
   border: none;
   padding: 12px 24px;
   border-radius: 999px;
@@ -479,8 +479,8 @@
 }
 
 .action-wrapper-bottom .btn-large {
-  background: var(--color-pink);
-  color: var(--color-light);
+  background: var(--btn-recreacao-2-bg, var(--btn-primary-bg));
+  color: var(--btn-recreacao-2-text, var(--btn-primary-text));
   border: none;
   padding: 16px 38px;
   border-radius: 999px;

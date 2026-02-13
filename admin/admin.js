@@ -103,18 +103,18 @@ function addBackToDashboardLink() {
         viewLink.style.justifyContent = 'center';
         viewLink.style.width = '42px';
         viewLink.style.height = '42px';
-        viewLink.style.background = 'var(--color-primary, #646cff)';
+        viewLink.style.background = '#45D3C0';
         viewLink.style.borderRadius = '50%';
         viewLink.style.boxShadow = '0 4px 12px rgba(100, 108, 255, 0.3)';
         viewLink.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         viewLink.onmouseover = () => { 
             viewLink.style.transform = 'scale(1.15) translateY(-2px)'; 
-            viewLink.style.boxShadow = '0 6px 16px rgba(100, 108, 255, 0.4)';
+            viewLink.style.boxShadow = '0 6px 16px rgba(69, 211, 192, 0.4)';
             viewLink.style.filter = 'brightness(1.1)';
         };
         viewLink.onmouseout = () => { 
             viewLink.style.transform = 'scale(1) translateY(0)'; 
-            viewLink.style.boxShadow = '0 4px 12px rgba(100, 108, 255, 0.3)';
+            viewLink.style.boxShadow = '0 4px 12px rgba(69, 211, 192, 0.3)';
             viewLink.style.filter = 'brightness(1)';
         };
         

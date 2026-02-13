@@ -88,8 +88,8 @@
 }
 
 .footer__btn {
-  background: var(--gradient-btn-highlight);
-  color: var(--text-inverse);
+  background: var(--btn-footer-bg, var(--gradient-btn-highlight));
+  color: var(--btn-footer-text, var(--text-inverse));
   padding: 16px 40px;
   border-radius: 50px;
   text-decoration: none;

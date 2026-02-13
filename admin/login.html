@@ -8,15 +8,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      --bg: #0b0f17;
-      --bg-alt: #0f1421;
-      --surface: #111827;
-      --card: #121826;
-      --border: #1f2a37;
+      --bg: #1b2438;
+      --bg-alt: #26324F;
+      --surface: #20293f;
+      --card: #20293f;
+      --border: #38425f;
       --text: #e5e7eb;
       --muted: #94a3b8;
-      --accent: #7c3aed;
-      --accent-2: #22d3ee;
+      --accent: #45D3C0;
+      --accent-2: #FCC62C;
       --danger: #ef4444;
     }
     * { box-sizing: border-box; }
@@ -26,8 +26,8 @@
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(1200px 600px at 0% 0%, rgba(124,58,237,0.15), transparent 60%),
-        radial-gradient(800px 500px at 100% 100%, rgba(34,211,238,0.12), transparent 50%),
+        radial-gradient(1200px 600px at 0% 0%, rgba(252,198,44,0.18), transparent 60%),
+        radial-gradient(800px 500px at 100% 100%, rgba(69,211,192,0.16), transparent 50%),
         linear-gradient(180deg, var(--bg), var(--bg-alt));
       min-height: 100vh;
     }
@@ -41,8 +41,8 @@
       padding: 48px;
       overflow: hidden;
       background:
-        radial-gradient(600px 300px at 30% 20%, rgba(124,58,237,0.15), transparent 60%),
-        radial-gradient(600px 300px at 80% 70%, rgba(34,211,238,0.12), transparent 60%);
+        radial-gradient(600px 300px at 30% 20%, rgba(252,198,44,0.18), transparent 60%),
+        radial-gradient(600px 300px at 80% 70%, rgba(69,211,192,0.16), transparent 60%);
     }
     .brand::before {
       content: "";
@@ -99,7 +99,7 @@
     .card {
       width: 100%;
       max-width: 420px;
-      background: linear-gradient(180deg, rgba(18,24,38,0.95), rgba(16,22,34,0.95));
+      background: linear-gradient(180deg, rgba(32,41,63,0.95), rgba(30,39,60,0.95));
       border: 1px solid var(--border);
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.35);
@@ -188,18 +188,18 @@
       font-weight: 600;
       font-size: 14px;
       color: #fff;
-      background: linear-gradient(180deg, #7c3aed, #6d28d9);
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.2), 0 14px 40px rgba(124,58,237,0.35);
+      background: linear-gradient(180deg, #45D3C0, #26324F);
+      box-shadow: 0 0 0 3px rgba(69,211,192,0.22), 0 14px 40px rgba(69,211,192,0.35);
       transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
     }
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 0 4px rgba(124,58,237,0.26), 0 18px 56px rgba(124,58,237,0.42);
+      box-shadow: 0 0 0 4px rgba(69,211,192,0.28), 0 18px 56px rgba(69,211,192,0.42);
       filter: brightness(1.05);
     }
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.22), 0 10px 30px rgba(124,58,237,0.3);
+      box-shadow: 0 0 0 3px rgba(69,211,192,0.24), 0 10px 30px rgba(69,211,192,0.34);
     }
     .note {
       text-align: center;
@@ -258,55 +258,6 @@
     </div>
   </div>
 
-  <script type="module">
-    import { supabase } from '../config/supabaseClient.js';
-
-    const loginForm = document.getElementById('login-form');
-    const errorBox = document.getElementById('error');
-    const errorText = document.getElementById('error-text');
-    const loginBtn = document.getElementById('login-btn');
-    const groups = Array.from(document.querySelectorAll('[data-group]'));
-
-    async function checkSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        window.location.href = 'dashboard.html';
-      }
-    }
-    checkSession();
-
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorBox.style.display = 'none';
-      errorText.textContent = '';
-      loginBtn.textContent = 'Entrando...';
-      loginBtn.disabled = true;
-
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-          
-        if (error) throw error;
-        window.location.href = 'dashboard.html';
-
-      } catch (error) {
-        const msg = error.message === 'Invalid login credentials' ? 'Credenciais inválidas ou acesso não autorizado' : error.message;
-        errorText.textContent = msg;
-        errorBox.style.display = 'flex';
-        loginBtn.textContent = 'Entrar';
-        loginBtn.disabled = false;
-      }
-    });
-    groups.forEach(g => {
-      const input = g.querySelector('.input');
-      input.addEventListener('focus', () => g.classList.add('focused'));
-      input.addEventListener('blur', () => g.classList.remove('focused'));
-    });
-  </script>
+  <script type="module" src="./login.js"></script>
 </body>
 </html>
