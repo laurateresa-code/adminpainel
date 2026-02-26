@@ -13,8 +13,18 @@
   let pixTimer = null;
   let pixExpired = false;
   let pixCopyFeedbackTimer = null;
+  let pixAutoRegenerateTimer = null;
   let pixEndAt = null;
   let pixKey = '';
+  let pixPaymentId = null;
+  let pixLastPaymentPayload = null;
+  let pixLastQrImageSrc = '';
+  let pixPollTimer = null;
+  let pixPollFailures = 0;
+  let pixCreatedAt = null;
+  let pixFakePaidTimer = null;
+
+  const USE_FAKE_PIX = true;
 
   // Elementos fixos
   const adultsEl = document.getElementById('qty-adults');
@@ -205,6 +215,21 @@
     reserveBtn.style.visibility = 'visible';
   };
 
+  const makeFakePixPaymentData = (merchantOrderId) => {
+    const now = Date.now();
+    const rand = Math.random().toString(16).slice(2, 10).toUpperCase();
+    const order = String(merchantOrderId || 'TESTE').replace(/[^\w-]/g, '').slice(0, 24);
+    const key = `00020126580014BR.GOV.BCB.PIX01${order}52040000530398654040.0195802BR5920VILLAGE RESORT TEST6009SAO PAULO62140510${rand}6304ABCD${String(now).slice(-6)}`;
+    return {
+      Payment: {
+        PaymentId: `FAKE-${rand}-${String(now).slice(-5)}`,
+        QrCodeString: key,
+        QrCodeImageUrl: 'https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png',
+        Status: 'PENDING'
+      }
+    };
+  };
+
   const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
 
   const formatCurrencyBRL = (value) =>
@@ -243,11 +268,26 @@
 
   if (cardFields) cardFields.style.display = method === 'card' ? 'block' : 'none';
   if (pixArea) pixArea.style.display = method === 'pix' ? 'block' : 'none';
-  if (submitBtn) submitBtn.textContent = method === 'pix' ? 'Já paguei' : 'Finalizar pagamento';
+  if (submitBtn) {
+    if (method !== 'pix') submitBtn.textContent = 'Finalizar pagamento';
+    else if (pixExpired) submitBtn.textContent = 'Gerar novo PIX';
+    else if ((pixKey || '').trim()) submitBtn.textContent = 'Já paguei';
+    else submitBtn.textContent = 'Gerar PIX';
+  }
 
   if (method !== 'pix' && pixTimer) {
     clearInterval(pixTimer);
     pixTimer = null;
+  }
+  if (method !== 'pix') stopPixPolling();
+  updatePixDeeplinkUI();
+
+  if (method === 'pix' && !pixTimer && !pixExpired) {
+    if ((pixKey || '').trim() && pixEndAt) {
+      startPixCountdown(Math.max(0, pixEndAt - Date.now()));
+    } else {
+      startPixCountdown(10 * 60 * 1000);
+    }
   }
 
   if (method === 'pix' && selectedRoom) {
@@ -304,6 +344,46 @@
     if (checkoutMessageEl) {
       checkoutMessageEl.textContent = '';
       checkoutMessageEl.className = 'checkout-message';
+    }
+
+    if (pixTimer) {
+      clearInterval(pixTimer);
+      pixTimer = null;
+    }
+    if (pixAutoRegenerateTimer) {
+      clearTimeout(pixAutoRegenerateTimer);
+      pixAutoRegenerateTimer = null;
+    }
+    if (pixCopyFeedbackTimer) {
+      clearTimeout(pixCopyFeedbackTimer);
+      pixCopyFeedbackTimer = null;
+    }
+    stopPixPolling();
+    pixExpired = false;
+    pixEndAt = null;
+    pixKey = '';
+    pixPaymentId = null;
+    pixLastPaymentPayload = null;
+    pixLastQrImageSrc = '';
+    pixCreatedAt = null;
+    updatePixKeyUI('');
+    setPixExpiredUI(false);
+    const { qrImg, qrFallbackBtn, keyVisible, regenerateBtn, copyBtn, copyIcon, copyText, deeplinkBtn, countdownEl } = getPixEls();
+    if (qrImg) qrImg.removeAttribute('src');
+    if (qrFallbackBtn) qrFallbackBtn.hidden = true;
+    if (keyVisible) keyVisible.hidden = true;
+    if (regenerateBtn) regenerateBtn.hidden = true;
+    if (deeplinkBtn) deeplinkBtn.hidden = true;
+    if (countdownEl) {
+      countdownEl.classList.remove('is-warning');
+      countdownEl.classList.remove('is-urgent');
+      countdownEl.textContent = formatCountdown(10 * 60 * 1000);
+    }
+    if (copyBtn) {
+      copyBtn.disabled = true;
+      copyBtn.classList.remove('is-copied');
+      if (copyText) copyText.textContent = copyBtn.dataset.originalText || 'Copiar chave PIX';
+      if (copyIcon) copyIcon.textContent = copyBtn.dataset.originalIcon || '⧉';
     }
 
     checkoutPanel.style.display = 'block';
@@ -553,6 +633,29 @@
   if (checkoutCloseBtn && checkoutPanel) {
     checkoutCloseBtn.addEventListener('click', () => {
       checkoutPanel.style.display = 'none';
+      if (pixTimer) {
+        clearInterval(pixTimer);
+        pixTimer = null;
+      }
+      if (pixAutoRegenerateTimer) {
+        clearTimeout(pixAutoRegenerateTimer);
+        pixAutoRegenerateTimer = null;
+      }
+      if (pixCopyFeedbackTimer) {
+        clearTimeout(pixCopyFeedbackTimer);
+        pixCopyFeedbackTimer = null;
+      }
+      stopPixPolling();
+      pixExpired = false;
+      pixEndAt = null;
+      pixKey = '';
+      pixPaymentId = null;
+      pixLastPaymentPayload = null;
+      pixLastQrImageSrc = '';
+      pixCreatedAt = null;
+      updatePixKeyUI('');
+      setPixExpiredUI(false);
+      updatePaymentCardVisibility();
     });
   }
 
@@ -562,9 +665,146 @@
   paymentRadios.forEach(r => {
     r.addEventListener('change', updatePaymentCardVisibility);
   });
-  updatePaymentCardVisibility();
+  setTimeout(updatePaymentCardVisibility, 0);
 
   const getPixArea = () => document.getElementById('checkout-pix-area');
+
+  const trackPixEvent = (name, payload) => {
+    try {
+      const evt = { name, ts: Date.now(), ...(payload || {}) };
+      if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: name, ...evt });
+      const key = 'pix_metrics';
+      const existingRaw = localStorage.getItem(key);
+      const existing = existingRaw ? JSON.parse(existingRaw) : [];
+      const next = Array.isArray(existing) ? [...existing, evt].slice(-200) : [evt];
+      localStorage.setItem(key, JSON.stringify(next));
+    } catch {}
+  };
+
+  const isMobileViewport = () => {
+    try {
+      return window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+    } catch {
+      return false;
+    }
+  };
+
+  const getPixEls = () => {
+    const area = getPixArea();
+    if (!area) return {};
+    return {
+      area,
+      qrImg: area.querySelector('#pix-qrcode') || area.querySelector('.pix-qrcode') || area.querySelector('.pix-qr'),
+      qrFallbackBtn: area.querySelector('#pix-qr-fallback-btn'),
+      copyBtn: area.querySelector('#copy-pix'),
+      copyIcon: area.querySelector('#copy-pix .pix-copy-btn__icon'),
+      copyText: area.querySelector('#copy-pix .pix-copy-btn__text'),
+      countdownEl: area.querySelector('#pix-countdown'),
+      expiredEl: area.querySelector('#pix-expired'),
+      regenerateBtn: area.querySelector('#pix-regenerate'),
+      deeplinkBtn: area.querySelector('#pix-deeplink'),
+      keyVisible: area.querySelector('#pix-key-visible'),
+      keyA11y: area.querySelector('#pix-key-a11y')
+    };
+  };
+
+  const updatePixKeyUI = (key) => {
+    const k = (key || '').trim();
+    const { keyVisible, keyA11y } = getPixEls();
+    if (keyA11y) keyA11y.textContent = k;
+    if (keyVisible) keyVisible.textContent = k;
+  };
+
+  const updatePixDeeplinkUI = () => {
+    const { deeplinkBtn } = getPixEls();
+    if (!deeplinkBtn) return;
+    deeplinkBtn.hidden = !(isMobileViewport() && (pixKey || '').trim() && !pixExpired);
+  };
+
+  const startPixPolling = () => {
+    if (!lastBookingId) return;
+    if (pixPollTimer) return;
+    pixPollFailures = 0;
+
+    if (USE_FAKE_PIX) {
+      if (pixFakePaidTimer) return;
+      pixFakePaidTimer = setTimeout(() => {
+        pixFakePaidTimer = null;
+        if (!lastBookingId || !(pixKey || '').trim() || pixExpired) return;
+        if (checkoutMessageEl) {
+          checkoutMessageEl.textContent = 'Pagamento confirmado! Sua reserva foi registrada.';
+          checkoutMessageEl.className = 'checkout-message success';
+        }
+        trackPixEvent('pix_paid_detected', { merchantOrderId: lastBookingId, msToConfirm: pixCreatedAt ? Date.now() - pixCreatedAt : null, mode: 'fake' });
+      }, 12000);
+      return;
+    }
+
+    const tryParseStatus = (obj) => {
+      const payment = obj?.Payment || obj?.payment || obj;
+      const raw = payment?.Status || payment?.status || payment?.paymentStatus || payment?.state || '';
+      return String(raw || '').toLowerCase();
+    };
+
+    const isPaid = (status) => {
+      const s = String(status || '').toLowerCase();
+      return ['approved', 'paid', 'confirmed', 'success', 'succeeded', 'captured'].some((k) => s.includes(k));
+    };
+
+    const tick = async () => {
+      if (!lastBookingId || !(pixKey || '').trim() || pixExpired) return;
+      try {
+        const resp = await fetch(PAYMENT_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentType: 'PixStatus',
+            merchantOrderId: lastBookingId,
+            paymentId: pixPaymentId || undefined
+          })
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          pixPollFailures += 1;
+          if (pixPollFailures >= 3) {
+            clearInterval(pixPollTimer);
+            pixPollTimer = null;
+          }
+          return;
+        }
+        const status = tryParseStatus(data);
+        if (isPaid(status)) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Pagamento confirmado! Sua reserva foi registrada.';
+            checkoutMessageEl.className = 'checkout-message success';
+          }
+          trackPixEvent('pix_paid_detected', { merchantOrderId: lastBookingId, msToConfirm: pixCreatedAt ? Date.now() - pixCreatedAt : null });
+          clearInterval(pixPollTimer);
+          pixPollTimer = null;
+        }
+      } catch {
+        pixPollFailures += 1;
+        if (pixPollFailures >= 3) {
+          clearInterval(pixPollTimer);
+          pixPollTimer = null;
+        }
+      }
+    };
+
+    pixPollTimer = setInterval(tick, 5000);
+    tick();
+  };
+
+  const stopPixPolling = () => {
+    if (pixPollTimer) {
+      clearInterval(pixPollTimer);
+      pixPollTimer = null;
+    }
+    if (pixFakePaidTimer) {
+      clearTimeout(pixFakePaidTimer);
+      pixFakePaidTimer = null;
+    }
+  };
 
   // --- PIX: copiar chave com feedback ---
   // Regras:
@@ -601,12 +841,17 @@
 
   const showPixCopiedFeedback = (btn) => {
     if (!btn) return;
-    if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent || 'Copiar chave PIX';
-    btn.textContent = 'Copiado!';
+    const iconEl = btn.querySelector('.pix-copy-btn__icon');
+    const textEl = btn.querySelector('.pix-copy-btn__text');
+    if (!btn.dataset.originalText) btn.dataset.originalText = (textEl?.textContent || '').trim() || 'Copiar chave PIX';
+    if (!btn.dataset.originalIcon) btn.dataset.originalIcon = (iconEl?.textContent || '').trim() || '⧉';
+    if (textEl) textEl.textContent = 'Chave copiada!';
+    if (iconEl) iconEl.textContent = '✓';
     btn.classList.add('is-copied');
     if (pixCopyFeedbackTimer) clearTimeout(pixCopyFeedbackTimer);
     pixCopyFeedbackTimer = setTimeout(() => {
-      btn.textContent = btn.dataset.originalText || 'Copiar chave PIX';
+      if (textEl) textEl.textContent = btn.dataset.originalText || 'Copiar chave PIX';
+      if (iconEl) iconEl.textContent = btn.dataset.originalIcon || '⧉';
       btn.classList.remove('is-copied');
       pixCopyFeedbackTimer = null;
     }, 2000);
@@ -615,12 +860,168 @@
   const handlePixCopy = async () => {
     if (pixExpired) return;
     const code = (pixKey || '').trim();
-    if (!code) return;
+    if (!code) {
+      if (checkoutMessageEl) {
+        checkoutMessageEl.textContent = 'Ainda não há uma chave PIX para copiar. Gere o PIX primeiro.';
+        checkoutMessageEl.className = 'checkout-message error';
+      }
+      return;
+    }
     const ok = await copyToClipboard(code);
-    if (!ok) return;
+    if (!ok) {
+      if (checkoutMessageEl) {
+        checkoutMessageEl.textContent = 'Não foi possível copiar a chave PIX. Tente novamente ou copie manualmente.';
+        checkoutMessageEl.className = 'checkout-message error';
+      }
+      return;
+    }
     const area = getPixArea();
     const btn = area ? area.querySelector('#copy-pix') : document.getElementById('copy-pix');
     showPixCopiedFeedback(btn);
+    trackPixEvent('pix_copied', { merchantOrderId: lastBookingId });
+  };
+
+  const applyPixPaymentData = (paymentData, bookingTotal) => {
+    const payment = paymentData?.Payment || paymentData?.payment || paymentData;
+    const qrString =
+      payment?.QrCodeString ||
+      payment?.QRCodeString ||
+      payment?.QRCode ||
+      payment?.qrCodeString ||
+      '';
+    const qrBase64 =
+      payment?.QrCodeBase64Image ||
+      payment?.QRCodeBase64Image ||
+      payment?.QrCodeImage ||
+      payment?.QRCodeImage ||
+      payment?.qrCodeBase64Image ||
+      payment?.qrCodeImage ||
+      payment?.QrCode?.Base64Image ||
+      payment?.QRCode?.Base64Image ||
+      payment?.QrCode?.QrCodeBase64Image ||
+      payment?.QRCode?.QrCodeBase64Image ||
+      '';
+    const qrImageUrl =
+      payment?.QrCodeImageUrl ||
+      payment?.QRCodeImageUrl ||
+      payment?.QrCodeUrl ||
+      payment?.QRCodeUrl ||
+      payment?.qrCodeImageUrl ||
+      payment?.qrCodeUrl ||
+      '';
+    const id =
+      payment?.PaymentId ||
+      payment?.paymentId ||
+      payment?.Id ||
+      payment?.id ||
+      null;
+
+    const { qrImg, qrFallbackBtn, keyVisible, regenerateBtn, copyBtn } = getPixEls();
+    if (!qrImg || !qrString) return false;
+
+    pixKey = String(qrString || '');
+    pixPaymentId = id;
+    pixCreatedAt = Date.now();
+    updatePixKeyUI(pixKey);
+
+    if (qrFallbackBtn) qrFallbackBtn.hidden = true;
+    if (keyVisible) keyVisible.hidden = true;
+    if (regenerateBtn) regenerateBtn.hidden = true;
+
+    if (qrBase64) {
+      pixLastQrImageSrc = `data:image/png;base64,${qrBase64}`;
+      qrImg.src = pixLastQrImageSrc;
+    } else if (qrImageUrl) {
+      pixLastQrImageSrc = String(qrImageUrl);
+      qrImg.src = pixLastQrImageSrc;
+    } else {
+      pixLastQrImageSrc = '';
+      qrImg.removeAttribute('src');
+    }
+
+    if (copyBtn) copyBtn.disabled = false;
+    setPixExpiredUI(false);
+    setPixTotalValue(bookingTotal);
+    startPixCountdown(10 * 60 * 1000);
+    updatePixDeeplinkUI();
+    startPixPolling();
+    trackPixEvent('pix_generated', { merchantOrderId: lastBookingId, paymentId: pixPaymentId });
+    return true;
+  };
+
+  const regeneratePix = async () => {
+    if (!pixLastPaymentPayload || !lastBookingId) {
+      const firstName = (document.getElementById('checkout-first-name')?.value || '').trim();
+      const lastName = (document.getElementById('checkout-last-name')?.value || '').trim();
+      const email = (document.getElementById('checkout-email')?.value || '').trim();
+      const cpf = (document.getElementById('checkout-cpf')?.value || '').trim();
+      const phone = (document.getElementById('checkout-phone')?.value || '').trim();
+      const zipCode = (document.getElementById('checkout-zip')?.value || '').trim();
+
+      if (!firstName || !lastName || !email || !cpf || !phone || !zipCode) {
+        if (checkoutMessageEl) {
+          checkoutMessageEl.textContent = 'Para gerar um novo PIX, preencha seus dados e clique em Gerar PIX.';
+          checkoutMessageEl.className = 'checkout-message error';
+        }
+        return;
+      }
+
+      const formEl = document.getElementById('checkout-form');
+      const pixRadio = formEl
+        ? formEl.querySelector('input[name="checkout-payment-method"][value="pix"]')
+        : document.querySelector('input[name="checkout-payment-method"][value="pix"]');
+      if (pixRadio) pixRadio.checked = true;
+      updatePaymentCardVisibility();
+
+      if (checkoutMessageEl) {
+        checkoutMessageEl.textContent = 'Gerando um novo PIX...';
+        checkoutMessageEl.className = 'checkout-message loading';
+      }
+
+      if (formEl && typeof formEl.requestSubmit === 'function') {
+        formEl.requestSubmit();
+      } else if (formEl) {
+        formEl.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      }
+      return;
+    }
+    const { regenerateBtn, qrImg, qrFallbackBtn, keyVisible, copyBtn } = getPixEls();
+    if (regenerateBtn) {
+      if (!regenerateBtn.dataset.originalText) regenerateBtn.dataset.originalText = regenerateBtn.textContent || 'Gerar novo QR Code';
+      regenerateBtn.textContent = 'Gerando novo QR...';
+      regenerateBtn.disabled = true;
+    }
+    if (qrFallbackBtn) qrFallbackBtn.hidden = true;
+    if (keyVisible) keyVisible.hidden = true;
+    if (qrImg) qrImg.removeAttribute('src');
+    if (copyBtn) copyBtn.disabled = true;
+
+    try {
+      if (USE_FAKE_PIX) {
+        const data = makeFakePixPaymentData(lastBookingId);
+        const baseTotal = Number(selectedRoom?.totalPrice || 0);
+        const bookingTotal = Number((baseTotal * 0.9).toFixed(2));
+        applyPixPaymentData(data, bookingTotal);
+        trackPixEvent('pix_regenerated', { merchantOrderId: lastBookingId, mode: 'fake' });
+        return;
+      }
+      const resp = await fetch(PAYMENT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pixLastPaymentPayload)
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) return;
+      const baseTotal = Number(selectedRoom?.totalPrice || 0);
+      const bookingTotal = Number((baseTotal * 0.9).toFixed(2));
+      applyPixPaymentData(data, bookingTotal);
+      trackPixEvent('pix_regenerated', { merchantOrderId: lastBookingId });
+    } finally {
+      if (regenerateBtn) {
+        regenerateBtn.textContent = regenerateBtn.dataset.originalText || 'Gerar novo QR Code';
+        regenerateBtn.disabled = false;
+      }
+    }
   };
 
   const pixCopyBtn = document.getElementById('copy-pix');
@@ -790,17 +1191,29 @@
   // - Contagem regressiva real
   // - Últimos 3 minutos: cor vermelha + pulsar suave
   // - Ao zerar: desabilita copiar e exibe "Tempo expirado. Gere um novo PIX."
-  const setPixExpiredUI = (expired) => {
+  const setPixExpiredUI = (expired, opts) => {
+    const options = opts || {};
     const hasActivePix = Boolean((pixKey || '').trim());
     pixExpired = Boolean(expired) && hasActivePix;
-    const area = getPixArea();
-    const expiredEl = area ? area.querySelector('#pix-expired') : document.getElementById('pix-expired');
-    const copyBtn = area ? area.querySelector('#copy-pix') : document.getElementById('copy-pix');
-    const qrWrap = area ? area.querySelector('.pix-qr-wrap') : null;
+    const { expiredEl, copyBtn, regenerateBtn, qrImg, qrFallbackBtn } = getPixEls();
+    const qrWrap = qrImg ? qrImg.closest('.pix-qr-wrap') : null;
 
-    if (expiredEl) expiredEl.hidden = !pixExpired;
+    if (expiredEl) {
+      expiredEl.hidden = !pixExpired;
+      if (pixExpired) {
+        expiredEl.textContent = options.autoRegenerate ? 'Seu PIX expirou. Gerando um novo em instantes...' : 'Seu PIX expirou';
+      }
+    }
     if (copyBtn) copyBtn.disabled = pixExpired || !(pixKey || '').trim();
+    if (regenerateBtn) regenerateBtn.hidden = !pixExpired;
+    if (qrFallbackBtn) qrFallbackBtn.hidden = true;
     if (qrWrap) qrWrap.style.display = pixExpired ? 'none' : 'grid';
+
+    updatePixDeeplinkUI();
+    if (pixExpired) {
+      stopPixPolling();
+      trackPixEvent('pix_expired', { merchantOrderId: lastBookingId });
+    }
   };
 
   const formatCountdown = (ms) => {
@@ -815,21 +1228,32 @@
     const el = area ? area.querySelector('#pix-countdown') : document.getElementById('pix-countdown');
     if (!el) return;
     if (pixTimer) { clearInterval(pixTimer); pixTimer = null; }
+    if (pixAutoRegenerateTimer) {
+      clearTimeout(pixAutoRegenerateTimer);
+      pixAutoRegenerateTimer = null;
+    }
     setPixExpiredUI(false);
     pixEndAt = Date.now() + ms;
     const tick = () => {
       const diff = Math.max(0, (pixEndAt || 0) - Date.now());
       el.textContent = formatCountdown(diff);
-      if (diff > 0 && diff <= 3 * 60 * 1000) {
-        el.classList.add('is-urgent');
-      } else {
-        el.classList.remove('is-urgent');
-      }
+      if (diff > 0 && diff <= 3 * 60 * 1000) el.classList.add('is-warning');
+      else el.classList.remove('is-warning');
+      if (diff > 0 && diff <= 1 * 60 * 1000) el.classList.add('is-urgent');
+      else el.classList.remove('is-urgent');
       if (diff <= 0) {
         clearInterval(pixTimer);
         pixTimer = null;
+        el.classList.remove('is-warning');
         el.classList.remove('is-urgent');
-        setPixExpiredUI(true);
+        setPixExpiredUI(true, { autoRegenerate: true });
+        if (pixLastPaymentPayload && lastBookingId) {
+          pixAutoRegenerateTimer = setTimeout(() => {
+            pixAutoRegenerateTimer = null;
+            const { regenerateBtn } = getPixEls();
+            if (regenerateBtn && !regenerateBtn.hidden) regenerateBtn.click();
+          }, 3000);
+        }
       }
     };
     tick();
@@ -838,13 +1262,22 @@
 
   const bindPixArea = () => {
     const area = getPixArea();
-    if (!area || !checkoutForm) return;
+    if (!area) return;
     if (area.dataset.pixInit === '1') return;
     area.dataset.pixInit = '1';
 
-    const radios = checkoutForm.querySelectorAll('input[name="checkout-payment-method"]');
+    if (typeof window.initCheckoutPix === 'function') {
+      window.initCheckoutPix();
+    }
+
+    const checkoutFormEl = document.getElementById('checkout-form');
+    const radios = checkoutFormEl
+      ? checkoutFormEl.querySelectorAll('input[name="checkout-payment-method"]')
+      : document.querySelectorAll('input[name="checkout-payment-method"]');
     const getSelectedMethod = () => {
-      const selected = checkoutForm.querySelector('input[name="checkout-payment-method"]:checked');
+      const selected = checkoutFormEl
+        ? checkoutFormEl.querySelector('input[name="checkout-payment-method"]:checked')
+        : document.querySelector('input[name="checkout-payment-method"]:checked');
       return selected ? selected.value : 'pix';
     };
 
@@ -853,10 +1286,15 @@
         clearInterval(pixTimer);
         pixTimer = null;
       }
+      if (pixAutoRegenerateTimer) {
+        clearTimeout(pixAutoRegenerateTimer);
+        pixAutoRegenerateTimer = null;
+      }
       pixEndAt = null;
       setPixExpiredUI(false);
       const countdownEl = area.querySelector('#pix-countdown');
       if (countdownEl) {
+        countdownEl.classList.remove('is-warning');
         countdownEl.classList.remove('is-urgent');
         countdownEl.textContent = formatCountdown(10 * 60 * 1000);
       }
@@ -865,11 +1303,65 @@
     const onPaymentMethodChange = () => {
       const method = getSelectedMethod();
       if (method === 'pix') {
-        startPixCountdown(10 * 60 * 1000);
+        updatePixDeeplinkUI();
+        if (!pixTimer && !pixExpired) {
+          if ((pixKey || '').trim() && pixEndAt) startPixCountdown(Math.max(0, pixEndAt - Date.now()));
+          else startPixCountdown(10 * 60 * 1000);
+        }
       } else {
         stopPixCountdown();
       }
     };
+
+    const { deeplinkBtn, regenerateBtn, qrFallbackBtn, qrImg, keyVisible, copyBtn } = getPixEls();
+
+    if (copyBtn && copyBtn.dataset.pixBound !== '1') {
+      copyBtn.dataset.pixBound = '1';
+      copyBtn.addEventListener('click', handlePixCopy);
+    }
+
+    if (deeplinkBtn && deeplinkBtn.dataset.pixBound !== '1') {
+      deeplinkBtn.dataset.pixBound = '1';
+      deeplinkBtn.addEventListener('click', () => {
+        if (pixExpired) return;
+        const code = (pixKey || '').trim();
+        if (!code) return;
+        trackPixEvent('pix_deeplink_clicked', { merchantOrderId: lastBookingId });
+        window.location.href = `pix://pay?code=${encodeURIComponent(code)}`;
+      });
+    }
+
+    if (regenerateBtn && regenerateBtn.dataset.pixBound !== '1') {
+      regenerateBtn.dataset.pixBound = '1';
+      regenerateBtn.addEventListener('click', () => {
+        trackPixEvent('pix_regenerate_clicked', { merchantOrderId: lastBookingId });
+        regeneratePix();
+      });
+    }
+
+    if (qrFallbackBtn && qrFallbackBtn.dataset.pixBound !== '1') {
+      qrFallbackBtn.dataset.pixBound = '1';
+      qrFallbackBtn.addEventListener('click', () => {
+        if (!qrImg || !pixLastQrImageSrc) return;
+        qrImg.src = pixLastQrImageSrc;
+        qrFallbackBtn.hidden = true;
+        if (keyVisible) keyVisible.hidden = true;
+      });
+    }
+
+    if (qrImg && qrImg.dataset.pixBound !== '1') {
+      qrImg.dataset.pixBound = '1';
+      qrImg.addEventListener('error', () => {
+        if (qrFallbackBtn) qrFallbackBtn.hidden = false;
+        if (keyVisible) keyVisible.hidden = false;
+        updatePixKeyUI(pixKey);
+      });
+    }
+
+    if (area.dataset.pixResizeBound !== '1') {
+      area.dataset.pixResizeBound = '1';
+      window.addEventListener('resize', updatePixDeeplinkUI);
+    }
 
     radios.forEach((r) => r.addEventListener('change', onPaymentMethodChange));
     onPaymentMethodChange();
@@ -908,6 +1400,26 @@
       const zipCode = (zipInput?.value || '').trim();
       const paymentMethodRaw = paymentMethodInput ? paymentMethodInput.value : 'pix';
       const isPix = paymentMethodRaw === 'pix';
+
+      if (isPix && (pixKey || '').trim() && lastBookingId && !pixExpired) {
+        if (checkoutMessageEl) {
+          checkoutMessageEl.textContent = 'Verificando pagamento Pix...';
+          checkoutMessageEl.className = 'checkout-message loading';
+        }
+        trackPixEvent('pix_check_clicked', { merchantOrderId: lastBookingId });
+        startPixPolling();
+        return;
+      }
+
+      if (isPix && pixExpired && pixLastPaymentPayload && lastBookingId) {
+        if (checkoutMessageEl) {
+          checkoutMessageEl.textContent = 'Gerando um novo Pix...';
+          checkoutMessageEl.className = 'checkout-message loading';
+        }
+        const { regenerateBtn } = getPixEls();
+        if (regenerateBtn && !regenerateBtn.hidden) regenerateBtn.click();
+        return;
+      }
 
       if (!firstName || !lastName || !email || !cpf || !phone || !zipCode) return;
 
@@ -982,19 +1494,45 @@
         checkoutMessageEl.textContent = 'Enviando sua reserva...';
         checkoutMessageEl.className = 'checkout-message loading';
       }
+      if (pixTimer) {
+        clearInterval(pixTimer);
+        pixTimer = null;
+      }
+      if (pixAutoRegenerateTimer) {
+        clearTimeout(pixAutoRegenerateTimer);
+        pixAutoRegenerateTimer = null;
+      }
       pixKey = '';
+      pixPaymentId = null;
+      pixLastPaymentPayload = null;
+      pixLastQrImageSrc = '';
+      pixCreatedAt = null;
       pixEndAt = null;
       setPixExpiredUI(false);
       const pixCountdownEl = document.getElementById('pix-countdown');
-      if (pixCountdownEl) pixCountdownEl.classList.remove('is-urgent');
-      const qrImgEl = document.getElementById('pix-qrcode');
+      if (pixCountdownEl) {
+        pixCountdownEl.classList.remove('is-warning');
+        pixCountdownEl.classList.remove('is-urgent');
+        pixCountdownEl.textContent = formatCountdown(10 * 60 * 1000);
+      }
+      const { qrImg: qrImgEl } = getPixEls();
       if (qrImgEl) qrImgEl.removeAttribute('src');
       const pixCopyBtn = document.getElementById('copy-pix');
       if (pixCopyBtn) {
         pixCopyBtn.disabled = true;
-        pixCopyBtn.textContent = pixCopyBtn.dataset.originalText || 'Copiar chave';
         pixCopyBtn.classList.remove('is-copied');
+        const iconEl = pixCopyBtn.querySelector('.pix-copy-btn__icon');
+        const textEl = pixCopyBtn.querySelector('.pix-copy-btn__text');
+        if (textEl) textEl.textContent = pixCopyBtn.dataset.originalText || 'Copiar chave PIX';
+        if (iconEl) iconEl.textContent = pixCopyBtn.dataset.originalIcon || '⧉';
       }
+      const { qrFallbackBtn, keyVisible, regenerateBtn, deeplinkBtn } = getPixEls();
+      if (qrFallbackBtn) qrFallbackBtn.hidden = true;
+      if (keyVisible) keyVisible.hidden = true;
+      if (regenerateBtn) regenerateBtn.hidden = true;
+      if (deeplinkBtn) deeplinkBtn.hidden = true;
+      stopPixPolling();
+      if (isPix) startPixCountdown(10 * 60 * 1000);
 
       try {
         const response = await fetch(BOOKING_API_URL, {
@@ -1053,6 +1591,22 @@
               installments
             };
 
+        if (isPix && USE_FAKE_PIX) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Pagamento Pix gerado (teste)! Escaneie o QR Code ou copie a chave.';
+            checkoutMessageEl.className = 'checkout-message success';
+          }
+          pixLastPaymentPayload = paymentPayload;
+          const paymentData = makeFakePixPaymentData(lastBookingId);
+          const ok = applyPixPaymentData(paymentData, bookingTotal);
+          if (!ok && checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Pagamento Pix criado, mas não foi possível exibir o QR Code. Tente gerar novamente.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          updatePaymentCardVisibility();
+          return;
+        }
+
         const paymentResp = await fetch(PAYMENT_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1072,44 +1626,18 @@
           return;
         }
 
-        console.log('Pagamento criado:', paymentData);
-
         if (isPix) {
           if (checkoutMessageEl) {
             checkoutMessageEl.textContent = 'Pagamento Pix gerado! Escaneie o QR Code ou copie a chave.';
             checkoutMessageEl.className = 'checkout-message success';
           }
-          const payment = paymentData.Payment || paymentData.payment || paymentData;
-          const qrString =
-            payment.QrCodeString ||
-            payment.QRCodeString ||
-            payment.QRCode ||
-            '';
-          const qrBase64 =
-            payment.QrCodeBase64Image ||
-            payment.QRCodeBase64Image ||
-            payment.QrCodeImage ||
-            payment.QRCodeImage ||
-            payment.QrCode?.Base64Image ||
-            payment.QRCode?.Base64Image ||
-            payment.QrCode?.QrCodeBase64Image ||
-            payment.QRCode?.QrCodeBase64Image ||
-            '';
-          const pixArea = document.getElementById('checkout-pix-area');
-          const qrImg = document.getElementById('pix-qrcode');
-          const pixCopyBtn = document.getElementById('copy-pix');
-          if (pixArea && qrImg && qrString) {
-            pixKey = qrString;
-            if (qrBase64) {
-              qrImg.src = `data:image/png;base64,${qrBase64}`;
-            } else {
-              qrImg.removeAttribute('src');
-            }
-            pixArea.style.display = 'block';
-            if (pixCopyBtn) pixCopyBtn.disabled = false;
-            setPixTotalValue(bookingTotal);
-            startPixCountdown(10 * 60 * 1000);
+          pixLastPaymentPayload = paymentPayload;
+          const ok = applyPixPaymentData(paymentData, bookingTotal);
+          if (!ok && checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Pagamento Pix criado, mas não foi possível exibir o QR Code. Tente gerar novamente.';
+            checkoutMessageEl.className = 'checkout-message error';
           }
+          updatePaymentCardVisibility();
         } else {
           const payment = paymentData.Payment || paymentData.payment || paymentData;
           const status = payment.Status || payment.status || '';

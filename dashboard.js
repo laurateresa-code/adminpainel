@@ -185,7 +185,7 @@ function renderCards(projectsToRender){
         <a href="admin.html?id=${project.id}" style="color:inherit;text-decoration:none">
             <div class="card-title">${project.name || 'Projeto'}</div>
         </a>
-        <a href="/${project.slug || 'view.html?id=' + project.id}" target="_blank" style="font-size: 10px; color: var(--primary); margin-top: 4px; text-decoration: none;">
+        <a class="card-slug" href="/${project.slug || 'view.html?id=' + project.id}" target="_blank" style="font-size: 10px; color: var(--primary); margin-top: 4px; text-decoration: none;">
             /${project.slug || ''} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 8px;"></i>
         </a>
         <div class="event-month-wrap">

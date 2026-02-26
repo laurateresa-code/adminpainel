@@ -215,33 +215,44 @@
           <div class="checkout-pix-area pix-area" id="checkout-pix-area" style="display: none;">
             <div class="pix-left">
               <div class="pix-qr-wrap" aria-label="QR Code PIX">
-                <img id="pix-qrcode" src="https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png" class="pix-qrcode pix-qr" alt="QR Code PIX">
+                <img src="https://codigosdebarrasbrasil.com.br/wp-content/uploads/2019/09/codigo_qr-300x300.png" class="pix-qrcode pix-qr" alt="QR Code PIX">
+                <button type="button" class="pix-qr-fallback-btn" id="pix-qr-fallback-btn" hidden>Mostrar QR Code</button>
               </div>
 
               <button type="button" id="copy-pix" class="pix-copy-btn" disabled>
                 <span class="pix-copy-btn__icon" aria-hidden="true">⧉</span>
                 <span class="pix-copy-btn__text">Copiar chave PIX</span>
               </button>
+
+
+              <div class="pix-key-visible" id="pix-key-visible" hidden></div>
+              <span id="pix-key-a11y" hidden></span>
             </div>
 
-      
+            <div class="pix-right">
               <div class="pix-total" id="pix-total">
-                <div class="pix-total__label">Total da compra</div>
+                <div class="pix-total__label"></div>
                 <div class="pix-total__value" id="pix-total-value">—</div>
               </div>
 
-              <div class="pix-countdown-glass"> 
-                <span class="pix-countdown-icon">⏱</span> 
-                <span class="pix-countdown" id="pix-countdown">10:00</span> 
+              <div class="pix-countdown-block">
+                <div class="pix-countdown-label">Tempo restante para pagar</div>
+                <div class="pix-countdown-glass" aria-label="Tempo restante para pagar">
+                  <span class="pix-countdown-icon" aria-hidden="true">⏱</span>
+                  <span class="pix-countdown" id="pix-countdown">10:00</span>
+                </div>
               </div>
+
               <div class="pix-trust" aria-label="Confiança do pagamento">
-                <span class="pix-trust__badge"><img src="https://logodownload.org/wp-content/uploads/2019/06/mercado-pago-logo-0.png" alt="Mercado Pago" width="40" height="40"></span>
+                <span class="pix-trust__badge"><img src="https://logodownload.org/wp-content/uploads/2019/06/mercado-pago-logo-0-1.png" alt="Mercado Pago" width="70" height="70"></span>
                 <span class="pix-trust__badge"><img src="https://logodownload.org/wp-content/uploads/2019/08/nubank-logo-0-1.png" alt="Nubank" width="40" height="40"></span>
                 <span class="pix-trust__badge"><img src="https://navegantesprev.sc.gov.br/img/conteudo/images/BB.png" alt="Banco do Brasil" width="60" height="40"></span>
                <span class="pix-trust__badge"><img src="https://specto.com.br/wp-content/uploads/2024/06/logo-specto-case-santander-01.png" alt="Santander" width="40" height="40"></span>
                <span class="pix-trust__badge"><img src="https://logodownload.org/wp-content/uploads/2018/09/bradesco-logo-novo-2018.png" alt="Bradesco" width="40" height="40"></span>
               </div>
-              <div class="pix-expired" id="pix-expired" hidden>PIX expirado</div>
+
+              <div class="pix-expired" id="pix-expired" hidden>Seu PIX expirou</div>
+              <button type="button" class="pix-action-btn" id="pix-regenerate" hidden>Gerar novo QR Code</button>
             </div>
           </div>
 

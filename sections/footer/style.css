@@ -57,7 +57,7 @@
 
   .site-footer .footer__divider-wrapper {
     position: absolute;
-    top: -120px;
+    top: -140px;
     left: 50%;
     transform: translateX(-50%);
     width: 100vw;
@@ -134,7 +134,7 @@
   width: 100vw;
   display: flex;
   justify-content: center;
-  margin-top: -210px;
+  margin-top: -240px;
   margin-bottom: 40px;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
