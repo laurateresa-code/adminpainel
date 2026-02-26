@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Village Retrô</title>
+  <link rel="stylesheet" href="admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Painel Admin</h2>
+        <p>White Label Config</p>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-target="dashboard">Dashboard</button>
+        <button class="nav-item" data-target="general">Geral & SEO</button>
+        <button class="nav-item" data-target="appearance">Temas & Aparência</button>
+        <button class="nav-item" data-target="colors">Cores</button>
+        <button class="nav-item" data-target="typography">Tipografia</button>
+        <button class="nav-item" data-target="sections">Seções da Página</button>
+        <button class="nav-item" data-target="pricing">Preços</button>
+        <button class="nav-item" data-target="images">Imagens & Assets</button>
+        <button class="nav-item" data-target="carousel">Carrosséis</button>
+        <button class="nav-item" data-target="variables">Variáveis</button>
+        <button class="nav-item" data-target="users">Usuários</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="save-btn" class="btn-save">Salvar Alterações</button>
+        <button id="logout-btn" class="btn-logout" style="margin-top: 10px; width: 100%; padding: 10px; background: transparent; border: 1px solid #ef4444; color: #ef4444; border-radius: 6px; cursor: pointer; font-weight: 500;">Sair da Conta</button>
+        <p id="status-msg"></p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <div class="topbar">
+        <div class="search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Buscar no painel">
+        </div>
+        <div class="actions">
+          <div class="avatar"></div>
+        </div>
+      </div>
+      
+      <!-- Tab: Dashboard -->
+      <div id="dashboard" class="tab-content active">
+        <h3 class="section-title">Visão Geral</h3>
+        <div class="config-card">
+          <h4>Bem-vindo ao Painel Administrativo</h4>
+          <p style="color: #6b7280; font-size: 14px;">Utilize o menu lateral para navegar entre as seções de configuração do site. Todas as alterações são salvas diretamente no arquivo de configuração.</p>
+        </div>
+      </div>
+
+      <!-- Tab: Geral & SEO -->
+      <div id="general" class="tab-content">
+        <h3 class="section-title">Geral & SEO</h3>
+        
+        <div class="config-card">
+          <h4>Informações do Site</h4>
+          <div class="form-group">
+            <label>Nome do Site</label>
+            <input type="text" id="siteName" data-path="siteName">
+          </div>
+          <div class="form-group">
+            <label>Título da Página (Meta Title)</label>
+            <input type="text" id="siteTitle" data-path="siteTitle">
+          </div>
+          <div class="form-group">
+            <label>Descrição (Meta Description)</label>
+            <textarea id="siteDescription" data-path="siteDescription"></textarea>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Vídeo Principal</h4>
+          <div class="form-group">
+            <label>URL do YouTube (formato embed)</label>
+            <input type="text" id="youtubeEmbed" data-path="video.youtubeEmbed" placeholder="ex: https://www.youtube.com/embed/SEU_ID">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Temas & Aparência (Frames & Bordas) -->
+      <div id="appearance" class="tab-content">
+        <h3 class="section-title">Temas & Aparência</h3>
+        
+        <div class="config-card">
+          <h4>Frames & Bordas</h4>
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Configure a aparência das bordas dos quadros (galeria, carrossel, etc).</p>
+          <div class="grid-2">
+            <div class="form-group">
+                <label>Grossura da Borda</label>
+                <input type="text" id="frameBorderWidth" data-path="frames.borderWidth" placeholder="ex: 4px">
+            </div>
+            <div class="form-group">
+                <label>Cor da Borda</label>
+                <div class="color-input">
+                  <input type="color" id="frameBorderColor" data-path="frames.borderColor">
+                  <input type="text" class="color-hex" data-sync="frameBorderColor">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Cores -->
+      <div id="colors" class="tab-content">
+        <h3 class="section-title">Cores do Tema</h3>
+        
+        <div class="config-card">
+          <h4>Marca (botões e destaques)</h4>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Rosa principal (botões/destaques)</label>
+              <div class="color-input">
+                <input type="color" id="primary" data-path="colors.primary">
+                <input type="text" class="color-hex" data-sync="primary">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Verde (destaques secundários)</label>
+              <div class="color-input">
+                <input type="color" id="secondary" data-path="colors.secondary">
+                <input type="text" class="color-hex" data-sync="secondary">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Amarelo (detalhes/ícones)</label>
+              <div class="color-input">
+                <input type="color" id="accent" data-path="colors.accent">
+                <input type="text" class="color-hex" data-sync="accent">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Fundos do site</h4>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Fundo principal (seções claras)</label>
+              <div class="color-input">
+                <input type="color" id="bgMain" data-path="colors.bgMain">
+                <input type="text" class="color-hex" data-sync="bgMain">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Fundo escuro (rodapé e countdown fixo)</label>
+              <div class="color-input">
+                <input type="color" id="bgDark" data-path="colors.bgDark">
+                <input type="text" class="color-hex" data-sync="bgDark">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Fundos por seção</h4>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Introdução — fundo da seção</label>
+              <div class="color-input">
+                <input type="color" id="bgIntro" data-path="colors.bgIntro">
+                <input type="text" class="color-hex" data-sync="bgIntro">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Calendário — fundo da seção</label>
+              <div class="color-input">
+                <input type="color" id="bgAgenda" data-path="colors.bgAgenda">
+                <input type="text" class="color-hex" data-sync="bgAgenda">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recreação (Turma do Bê) — fundo</label>
+              <div class="color-input">
+                <input type="color" id="programacoesBgColor" data-path="variables.programacoes.bgColor">
+                <input type="text" class="color-hex" data-sync="programacoesBgColor">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Feedbacks — fundo da seção</label>
+              <div class="color-input">
+                <input type="color" id="bgFeedback" data-path="colors.bgFeedback">
+                <input type="text" class="color-hex" data-sync="bgFeedback">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tripadvisor — fundo da seção</label>
+              <div class="color-input">
+                <input type="color" id="bgTripadvisor" data-path="colors.bgTripadvisor">
+                <input type="text" class="color-hex" data-sync="bgTripadvisor">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Cores dos botões por seção</h4>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Introdução — cor do botão</label>
+              <div class="color-input">
+                <input type="color" id="btnIntroBg" data-path="colors.btnIntroBg">
+                <input type="text" class="color-hex" data-sync="btnIntroBg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Introdução — cor do texto do botão</label>
+              <div class="color-input">
+                <input type="color" id="btnIntroText" data-path="colors.btnIntroText">
+                <input type="text" class="color-hex" data-sync="btnIntroText">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recreação — botão superior</label>
+              <div class="color-input">
+                <input type="color" id="btnRecreacao1Bg" data-path="colors.btnRecreacao1Bg">
+                <input type="text" class="color-hex" data-sync="btnRecreacao1Bg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recreação — texto do botão superior</label>
+              <div class="color-input">
+                <input type="color" id="btnRecreacao1Text" data-path="colors.btnRecreacao1Text">
+                <input type="text" class="color-hex" data-sync="btnRecreacao1Text">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recreação — botão inferior</label>
+              <div class="color-input">
+                <input type="color" id="btnRecreacao2Bg" data-path="colors.btnRecreacao2Bg">
+                <input type="text" class="color-hex" data-sync="btnRecreacao2Bg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Recreação — texto do botão inferior</label>
+              <div class="color-input">
+                <input type="color" id="btnRecreacao2Text" data-path="colors.btnRecreacao2Text">
+                <input type="text" class="color-hex" data-sync="btnRecreacao2Text">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Footer — cor do botão</label>
+              <div class="color-input">
+                <input type="color" id="btnFooterBg" data-path="colors.btnFooterBg">
+                <input type="text" class="color-hex" data-sync="btnFooterBg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Footer — cor do texto do botão</label>
+              <div class="color-input">
+                <input type="color" id="btnFooterText" data-path="colors.btnFooterText">
+                <input type="text" class="color-hex" data-sync="btnFooterText">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Textos por seção</h4>
+          
+          <div class="grid-2">
+            <div class="form-group">
+                <label>Intro — título principal ("Carnaval sem fim...")</label>
+                <div class="color-input">
+                    <input type="color" id="colorPrincipalTitle" data-path="typography.colorPrincipalTitle">
+                    <input type="text" class="color-hex" data-sync="colorPrincipalTitle">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Intro — descrição</label>
+                <div class="color-input">
+                    <input type="color" id="colorIntroDesc" data-path="typography.colorIntroDesc">
+                    <input type="text" class="color-hex" data-sync="colorIntroDesc">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Intro — rótulos ("PACOTES A PARTIR DE" / "EM ATÉ 10X")</label>
+                <div class="color-input">
+                    <input type="color" id="colorIntroLabel" data-path="typography.colorIntroLabel">
+                    <input type="text" class="color-hex" data-sync="colorIntroLabel">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Intro — destaque (preço/promo)</label>
+                <div class="color-input">
+                    <input type="color" id="colorPromoHighlight" data-path="typography.colorPromoHighlight">
+                    <input type="text" class="color-hex" data-sync="colorPromoHighlight">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Agenda — título do calendário (mês/ano)</label>
+                <div class="color-input">
+                    <input type="color" id="colorCalendarTitle" data-path="typography.colorCalendarTitle">
+                    <input type="text" class="color-hex" data-sync="colorCalendarTitle">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Frames — título variação 1 (Carna Village)</label>
+                <div class="color-input">
+                    <input type="color" id="colorFramesVar1" data-path="typography.colorFramesVar1">
+                    <input type="text" class="color-hex" data-sync="colorFramesVar1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Frames — título variação 2 (Promo)</label>
+                <div class="color-input">
+                    <input type="color" id="colorFramesVar2" data-path="typography.colorFramesVar2">
+                    <input type="text" class="color-hex" data-sync="colorFramesVar2">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Frames — título variação 3 (Turma do Bê)</label>
+                <div class="color-input">
+                    <input type="color" id="colorFramesVar3" data-path="typography.colorFramesVar3">
+                    <input type="text" class="color-hex" data-sync="colorFramesVar3">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Frames — subtítulo da Turma</label>
+                <div class="color-input">
+                    <input type="color" id="colorTurmaSubtitle" data-path="typography.colorTurmaSubtitle">
+                    <input type="text" class="color-hex" data-sync="colorTurmaSubtitle">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Feedback — títulos</label>
+                <div class="color-input">
+                    <input type="color" id="colorFeedbackTitle" data-path="typography.colorFeedbackTitle">
+                    <input type="text" class="color-hex" data-sync="colorFeedbackTitle">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Feedback — autores</label>
+                <div class="color-input">
+                    <input type="color" id="colorFeedbackAuthor" data-path="typography.colorFeedbackAuthor">
+                    <input type="text" class="color-hex" data-sync="colorFeedbackAuthor">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Galeria — título da seção</label>
+                <div class="color-input">
+                    <input type="color" id="colorGalleryTitle" data-path="typography.colorGalleryTitle">
+                    <input type="text" class="color-hex" data-sync="colorGalleryTitle">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Tipografia -->
+      <div id="typography" class="tab-content">
+        <h3 class="section-title">Tipografia</h3>
+        
+        <div class="config-card">
+          <h4>Fontes e Tamanhos</h4>
+          <div class="form-group">
+            <label>Fonte de Títulos (Font Family)</label>
+            <input type="text" id="fontHeading" data-path="typography.fontHeading" placeholder="ex: 'Inter', sans-serif">
+          </div>
+          <div class="form-group">
+            <label>Fonte de Corpo (Font Family)</label>
+            <input type="text" id="fontBody" data-path="typography.fontBody" placeholder="ex: 'Inter', sans-serif">
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Tamanho Base (px)</label>
+              <input type="text" id="sizeBase" data-path="typography.sizeBase" placeholder="ex: 16px">
+            </div>
+            <div class="form-group">
+              <label>Cor do Texto Principal</label>
+              <div class="color-input">
+                <input type="color" id="textColor" data-path="typography.textColor">
+                <input type="text" class="color-hex" data-sync="textColor">
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Tamanho H1 (px)</label>
+              <input type="text" id="sizeH1" data-path="typography.sizeH1" placeholder="ex: 36px">
+            </div>
+            <div class="form-group">
+              <label>Tamanho H2 (px)</label>
+              <input type="text" id="sizeH2" data-path="typography.sizeH2" placeholder="ex: 30px">
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Estilo dos Títulos</h4>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Grossura da Borda (Stroke)</label>
+              <input type="text" id="titleStrokeWidth" data-path="typography.titleStrokeWidth" placeholder="ex: 1px, 0.1em">
+            </div>
+            <div class="form-group">
+                <label>Cor da Borda (Stroke)</label>
+                <div class="color-input">
+                  <input type="color" id="titleStrokeColor" data-path="typography.titleStrokeColor">
+                  <input type="text" class="color-hex" data-sync="titleStrokeColor">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Seções da Página -->
+      <div id="sections" class="tab-content">
+        <h3 class="section-title">Seções da Página</h3>
+        
+        <div class="config-card">
+          <h4>Hero & Introdução</h4>
+          <div class="form-group">
+            <label>Título Hero (Principal)</label>
+            <input type="text" id="heroTitle" data-path="text.heroTitle">
+          </div>
+          <div class="form-group">
+            <label>Título Introdução</label>
+            <input type="text" id="introTitle" data-path="text.introTitle">
+          </div>
+          <div class="form-group">
+            <label>Descrição Introdução</label>
+            <textarea id="introDesc" data-path="text.introDesc" rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Galeria & Destaques</h4>
+          <div class="form-group">
+            <label>Título Galeria</label>
+            <input type="text" id="galleryTitle" data-path="text.galleryTitle">
+          </div>
+          <div class="form-group">
+            <label>Título Destaque (Highlight)</label>
+            <input type="text" id="highlightTitle" data-path="text.highlightTitle">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Agenda & Feedback</h4>
+          <div class="form-group">
+              <label>Título Agenda</label>
+              <input type="text" id="agendaTitle" data-path="text.agendaTitle">
+          </div>
+          <div class="form-group">
+              <label>Feedback: Título Topo</label>
+              <input type="text" id="feedbackTitleTop" data-path="text.feedbackTitleTop">
+          </div>
+          <div class="form-group">
+              <label>Feedback: Título Baixo</label>
+              <input type="text" id="feedbackTitleBottom" data-path="text.feedbackTitleBottom">
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Frames Promocionais</h4>
+          <div class="form-group">
+            <label>Texto Promo (suporta HTML)</label>
+            <textarea id="framesPromoText" data-path="text.framesPromoText" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+              <label>Título Turma</label>
+              <input type="text" id="framesTurmaTitle" data-path="text.framesTurmaTitle">
+          </div>
+          <div class="form-group">
+              <label>Subtítulo Turma</label>
+              <input type="text" id="framesTurmaSubtitle" data-path="text.framesTurmaSubtitle">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Preços -->
+      <div id="pricing" class="tab-content">
+        <h3 class="section-title">Preços</h3>
+        
+        <div class="config-card">
+          <h4>Valores</h4>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Preço "De" (Antigo)</label>
+              <input type="text" id="oldPrice" data-path="pricing.oldPrice">
+            </div>
+            <div class="form-group">
+              <label>Preço "Por" (Atual)</label>
+              <input type="text" id="newPrice" data-path="pricing.newPrice">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Imagens & Assets -->
+      <div id="images" class="tab-content">
+        <h3 class="section-title">Imagens & Assets</h3>
+        
+        <div class="config-card">
+          <h4>Logos e Banners</h4>
+          <div class="image-upload-group">
+            <label>Logo do topo (Header)</label>
+            <div class="upload-area">
+              <img id="preview-logoSvg" class="img-preview" src="" alt="Preview">
+              <div class="upload-controls">
+                <input type="text" id="logoSvg" data-path="images.logoSvg" readonly>
+                <input type="file" id="file-logoSvg" accept="image/*" onchange="handleImageUpload(this, 'logoSvg', 'logo')">
+                <label for="file-logoSvg" class="btn-upload">Alterar Imagem</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="image-upload-group">
+            <label>Imagem do topo (Hero)</label>
+            <div class="upload-area">
+              <img id="preview-bgHero" class="img-preview" src="" alt="Preview">
+              <div class="upload-controls">
+                <input type="text" id="bgHero" data-path="images.bgHero" readonly>
+                <input type="file" id="file-bgHero" accept="image/*" onchange="handleImageUpload(this, 'bgHero', 'banners')">
+                <label for="file-bgHero" class="btn-upload">Alterar Imagem</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Stickers & Decorações</h4>
+          <div class="grid-2">
+            <div class="image-upload-group">
+              <label>Divisor entre seções</label>
+              <div class="upload-area">
+                <img id="preview-stickerDivider" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="stickerDivider" data-path="images.stickerDivider" readonly>
+                  <input type="file" id="file-stickerDivider" accept="image/*" onchange="handleImageUpload(this, 'stickerDivider', 'stickers')">
+                  <label for="file-stickerDivider" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Divisor do rodapé</label>
+              <div class="upload-area">
+                <img id="preview-footerDivider" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="footerDivider" data-path="images.footerDivider" readonly>
+                  <input type="file" id="file-footerDivider" accept="image/*" onchange="handleImageUpload(this, 'footerDivider', 'stickers')">
+                  <label for="file-footerDivider" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Stickers de Destaque</h4>
+          <div class="grid-2">
+            <div class="image-upload-group">
+              <label>Ícone 1 (1º do carrossel/loop)</label>
+              <div class="upload-area">
+                <img id="preview-stickerIcon1" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="stickerIcon1" data-path="images.stickerIcon1" readonly>
+                  <input type="file" id="file-stickerIcon1" accept="image/*" onchange="handleImageUpload(this, 'stickerIcon1', 'stickers')">
+                  <label for="file-stickerIcon1" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Ícone 2 (2º do carrossel/loop)</label>
+              <div class="upload-area">
+                <img id="preview-stickerIcon2" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="stickerIcon2" data-path="images.stickerIcon2" readonly>
+                  <input type="file" id="file-stickerIcon2" accept="image/*" onchange="handleImageUpload(this, 'stickerIcon2', 'stickers')">
+                  <label for="file-stickerIcon2" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Ícone 3 (3º do carrossel/loop)</label>
+              <div class="upload-area">
+                <img id="preview-stickerIcon3" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="stickerIcon3" data-path="images.stickerIcon3" readonly>
+                  <input type="file" id="file-stickerIcon3" accept="image/*" onchange="handleImageUpload(this, 'stickerIcon3', 'stickers')">
+                  <label for="file-stickerIcon3" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Ícone 4 (4º do carrossel/loop)</label>
+              <div class="upload-area">
+                <img id="preview-stickerIcon4" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="stickerIcon4" data-path="images.stickerIcon4" readonly>
+                  <input type="file" id="file-stickerIcon4" accept="image/*" onchange="handleImageUpload(this, 'stickerIcon4', 'stickers')">
+                  <label for="file-stickerIcon4" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Mascotes</h4>
+          <div class="grid-2">
+            <div class="image-upload-group">
+              <label>Mascotes (Desktop)</label>
+              <div class="upload-area">
+                <img id="preview-mascots" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="mascots" data-path="images.mascots" readonly>
+                  <input type="file" id="file-mascots" accept="image/*" onchange="handleImageUpload(this, 'mascots', 'stickers')">
+                  <label for="file-mascots" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Mascotes (Mobile)</label>
+              <div class="upload-area">
+                <img id="preview-mascotsMobile" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="mascotsMobile" data-path="images.mascotsMobile" readonly>
+                  <input type="file" id="file-mascotsMobile" accept="image/*" onchange="handleImageUpload(this, 'mascotsMobile', 'stickers')">
+                  <label for="file-mascotsMobile" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Imagens da Galeria (Benefícios)</h4>
+          <div class="image-upload-group">
+            <label>Card 1 (imagem de fundo)</label>
+            <div class="upload-area">
+              <img id="preview-galleryBenefit1" class="img-preview" src="" alt="Preview">
+              <div class="upload-controls">
+                <input type="text" id="galleryBenefit1" data-path="images.galleryBenefit1" readonly>
+                <input type="file" id="file-galleryBenefit1" accept="image/*" onchange="handleImageUpload(this, 'galleryBenefit1', 'gallery')">
+                <label for="file-galleryBenefit1" class="btn-upload">Alterar</label>
+              </div>
+            </div>
+          </div>
+          <div class="image-upload-group">
+            <label>Card 2 (imagem de fundo)</label>
+            <div class="upload-area">
+              <img id="preview-galleryBenefit2" class="img-preview" src="" alt="Preview">
+              <div class="upload-controls">
+                <input type="text" id="galleryBenefit2" data-path="images.galleryBenefit2" readonly>
+                <input type="file" id="file-galleryBenefit2" accept="image/*" onchange="handleImageUpload(this, 'galleryBenefit2', 'gallery')">
+                <label for="file-galleryBenefit2" class="btn-upload">Alterar</label>
+              </div>
+            </div>
+          </div>
+          <div class="image-upload-group">
+            <label>Card 3 (imagem de fundo)</label>
+            <div class="upload-area">
+              <img id="preview-galleryBenefit3" class="img-preview" src="" alt="Preview">
+              <div class="upload-controls">
+                <input type="text" id="galleryBenefit3" data-path="images.galleryBenefit3" readonly>
+                <input type="file" id="file-galleryBenefit3" accept="image/*" onchange="handleImageUpload(this, 'galleryBenefit3', 'gallery')">
+                <label for="file-galleryBenefit3" class="btn-upload">Alterar</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Carrosséis -->
+      <div id="carousel" class="tab-content">
+        <h3 class="section-title">Carrosséis</h3>
+        
+        <div class="config-card">
+          <h4>Carrossel de Destaque</h4>
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 20px;">Adicione até 12 imagens para o carrossel principal.</p>
+          
+          <div class="grid-2">
+            <!-- Carousel Items Loop -->
+            <div class="image-upload-group">
+              <label>Slide 1 (primeiro)</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg1" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg1" data-path="images.carouselImg1" readonly>
+                  <input type="file" id="file-carouselImg1" accept="image/*" onchange="handleImageUpload(this, 'carouselImg1', 'carousel')">
+                  <label for="file-carouselImg1" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 2</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg2" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg2" data-path="images.carouselImg2" readonly>
+                  <input type="file" id="file-carouselImg2" accept="image/*" onchange="handleImageUpload(this, 'carouselImg2', 'carousel')">
+                  <label for="file-carouselImg2" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 3</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg3" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg3" data-path="images.carouselImg3" readonly>
+                  <input type="file" id="file-carouselImg3" accept="image/*" onchange="handleImageUpload(this, 'carouselImg3', 'carousel')">
+                  <label for="file-carouselImg3" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 4</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg4" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg4" data-path="images.carouselImg4" readonly>
+                  <input type="file" id="file-carouselImg4" accept="image/*" onchange="handleImageUpload(this, 'carouselImg4', 'carousel')">
+                  <label for="file-carouselImg4" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 5</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg5" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg5" data-path="images.carouselImg5" readonly>
+                  <input type="file" id="file-carouselImg5" accept="image/*" onchange="handleImageUpload(this, 'carouselImg5', 'carousel')">
+                  <label for="file-carouselImg5" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 6</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg6" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg6" data-path="images.carouselImg6" readonly>
+                  <input type="file" id="file-carouselImg6" accept="image/*" onchange="handleImageUpload(this, 'carouselImg6', 'carousel')">
+                  <label for="file-carouselImg6" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 7</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg7" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg7" data-path="images.carouselImg7" readonly>
+                  <input type="file" id="file-carouselImg7" accept="image/*" onchange="handleImageUpload(this, 'carouselImg7', 'carousel')">
+                  <label for="file-carouselImg7" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 8</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg8" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg8" data-path="images.carouselImg8" readonly>
+                  <input type="file" id="file-carouselImg8" accept="image/*" onchange="handleImageUpload(this, 'carouselImg8', 'carousel')">
+                  <label for="file-carouselImg8" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 9</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg9" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg9" data-path="images.carouselImg9" readonly>
+                  <input type="file" id="file-carouselImg9" accept="image/*" onchange="handleImageUpload(this, 'carouselImg9', 'carousel')">
+                  <label for="file-carouselImg9" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 10</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg10" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg10" data-path="images.carouselImg10" readonly>
+                  <input type="file" id="file-carouselImg10" accept="image/*" onchange="handleImageUpload(this, 'carouselImg10', 'carousel')">
+                  <label for="file-carouselImg10" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 11</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg11" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg11" data-path="images.carouselImg11" readonly>
+                  <input type="file" id="file-carouselImg11" accept="image/*" onchange="handleImageUpload(this, 'carouselImg11', 'carousel')">
+                  <label for="file-carouselImg11" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+            <div class="image-upload-group">
+              <label>Slide 12 (último)</label>
+              <div class="upload-area">
+                <img id="preview-carouselImg12" class="img-preview" src="" alt="Preview">
+                <div class="upload-controls">
+                  <input type="text" id="carouselImg12" data-path="images.carouselImg12" readonly>
+                  <input type="file" id="file-carouselImg12" accept="image/*" onchange="handleImageUpload(this, 'carouselImg12', 'carousel')">
+                  <label for="file-carouselImg12" class="btn-upload">Alterar</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="variables" class="tab-content">
+        <h3 class="section-title">Variáveis</h3>
+        <div class="config-card">
+          <h4>Calendário (Agenda)</h4>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="agendaEnabled" data-path="agenda.enabled">
+              Ativar calendário (Agenda)
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Agenda — cor de fundo da seção</label>
+            <div class="color-input">
+              <input type="color" id="bgAgenda" data-path="colors.bgAgenda">
+              <input type="text" class="color-hex" data-sync="bgAgenda">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Agenda — cor do fundo dos dias do calendário</label>
+            <div class="color-input">
+              <input type="color" id="agendaDayBgColor" data-path="agenda.dayBgColor">
+              <input type="text" class="color-hex" data-sync="agendaDayBgColor">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Mês exibido no calendário</label>
+              <select id="agendaMonth" data-path="agenda.month">
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Ano exibido no calendário</label>
+              <input type="number" id="agendaYear" data-path="agenda.year">
+            </div>
+          </div>
+        </div>
+        <div class="config-card">
+          <h4>Programações</h4>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="programacoesEnabled" data-path="variables.programacoes.enabled">
+              Ativar Programações
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Onde aparece no site</label>
+            <select id="programacoesPosition" data-path="variables.programacoes.position">
+              <option value="afterIntro">Depois da Intro</option>
+              <option value="afterAgenda">Depois da Agenda</option>
+              <option value="afterGaleria">Depois da Galeria</option>
+              <option value="beforeFaq">Antes do FAQ</option>
+              <option value="beforeFooter">Antes do Rodapé</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cor de fundo da seção</label>
+            <div class="color-input">
+              <input type="color" id="programacoesBgColor" data-path="variables.programacoes.bgColor">
+              <input type="text" class="color-hex" data-sync="programacoesBgColor">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Programações — horários e atividades</label>
+            <div id="programacoesScheduleEditor" class="schedule-editor"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="users" class="tab-content">
+        <h3 class="section-title">Usuários</h3>
+        <div class="config-card">
+          <h4>Gerenciamento de Usuários</h4>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div class="form-group" style="margin:0;flex:1;max-width:320px;">
+              <label>Buscar usuário</label>
+              <input type="text" id="users-search" placeholder="Digite para filtrar">
+            </div>
+          </div>
+          <div style="overflow:auto;">
+            <table style="width:100%;border-collapse:separate;border-spacing:0;">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:500;">Nome</th>
+                  <th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:500;">Email</th>
+                  <th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:500;">Criado</th>
+                  <th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:500;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

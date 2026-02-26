@@ -1,0 +1,1812 @@
+.agenda {
+  background: var(--bg-agenda, var(--bg-badges));
+  color: #2b2100;
+  position: relative;
+  overflow: hidden;
+  padding: 28px 0 calc(32px + var(--agenda-cut-height, clamp(70px, 10vw, 140px)));
+}
+
+.agenda::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 130%;
+  height: var(--agenda-cut-height, clamp(70px, 10vw, 140px));
+  background: var(--bg-main);
+  transform: translateX(-50%);
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.agenda .container {
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  -webkit-text-stroke: var(--text-stroke-width) var(--text-stroke-color);
+  paint-order: stroke fill;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  color: var(--color-calendar-title);
+}
+
+#agendaTitle {
+  scroll-margin-top: calc(var(--countdown-h) + 120px);
+}
+
+.selectors {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  /* Largura fixa para os grupos */
+}
+
+.qty {
+  display: flex;
+  /* Mudado de inline-flex para flex para respeitar largura */
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-main);
+  /* Fallback opacity handled by alpha if needed, using solid for now */
+  color: var(--text-dark);
+  padding: 10px 14px;
+  border-radius: 999px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.13);
+
+  /* Forçar mesmo tamanho */
+  width: 100%;
+  /* Ocupa a largura do pai (selector-group) */
+  justify-content: space-between;
+  box-sizing: border-box;
+  /* Garante que padding não aumente largura */
+}
+
+.qty__label {
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.qty__value {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.qty__btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  color: var(--text-dark);
+}
+
+.qty--dec {
+  background: var(--bg-disabled);
+}
+
+.qty--inc {
+  background: var(--color-secondary);
+}
+
+.selectors__note {
+  text-align: center;
+  color: var(--btn-accent-text);
+  font-size: 12px;
+  margin: 6px 0 12px;
+  font-weight: 500;
+}
+
+/* Disponibilidade Direta */
+.availability-results {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.room-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.room-card:hover {
+  transform: translateY(-5px);
+}
+
+.room-card__image-wrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.room-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.room-card:hover .room-card__image {
+  transform: scale(1.05);
+}
+
+.room-card__content {
+  padding: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-card__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.room-card__desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.room-card__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.room-card__feature {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+  font-weight: 500;
+}
+
+.room-card__feature i {
+  color: var(--color-secondary);
+  font-size: 14px;
+}
+
+.room-card__price-wrapper {
+  margin-top: auto;
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+}
+
+.room-card__price-label {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  display: block;
+}
+
+.room-card__price {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-secondary);
+  font-family: var(--font-heading);
+}
+
+.room-card__btn {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  background: var(--color-secondary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.room-card__btn:hover {
+  opacity: 0.9;
+}
+
+.availability-loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+}
+
+.availability-error {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background: #fff0f0;
+  border-radius: 12px;
+  color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .availability-results {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .selectors {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .selector-group {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    /* Centralizar */
+  }
+}
+
+@media (max-width: 480px) {
+
+  .calendar__weekdays,
+  .calendar__grid {
+    font-size: 12px;
+    gap: 2px;
+  }
+
+  .day {
+    height: 36px;
+    line-height: 36px;
+  }
+}
+
+.calendar__title {
+  text-align: center;
+  font-weight: 800;
+  color: var(--color-calendar-title);
+  margin-bottom: 10px;
+}
+
+.calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  margin-bottom: 8px;
+}
+
+.calendar__grid .day {
+  cursor: pointer;
+}
+
+.day.is-selected,
+.day.in-range {
+  outline: 2px solid var(--color-pink);
+  background: var(--color-pink-light);
+}
+
+.day.range-start {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.day.range-end {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.reserve__btn {
+  background: var(--color-pink);
+  color: var(--color-light);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--color-primary-dark);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.reserve__btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--color-primary-dark);
+}
+
+.reserve__btn:disabled {
+  background: var(--color-pink);
+  /* Mantém a cor rosa */
+  color: var(--color-light);
+  cursor: not-allowed;
+  opacity: 1;
+  /* Mantém totalmente visível */
+  pointer-events: none;
+  /* Impede cliques mas mantém visual */
+  box-shadow: 0 4px 0 var(--color-primary-dark);
+  /* Mantém a sombra */
+  transform: none;
+  /* Mantém posição */
+}
+
+.reserve__btn.is-disabled {
+  background: var(--color-pink);
+  /* Mantém a cor rosa */
+  color: var(--color-light);
+  cursor: not-allowed;
+  opacity: 1;
+  /* Mantém totalmente visível */
+  pointer-events: auto;
+  box-shadow: 0 4px 0 var(--color-primary-dark);
+  /* Mantém a sombra */
+  transform: none;
+  /* Mantém posição */
+}
+
+/* ===== Room Card (Mobile-first, vendável) - RESTAURADO E ADAPTADO PARA CARROSSEL ===== */
+.results-container {
+  margin-top: 40px;
+  padding-bottom: 40px;
+}
+
+#availability-results {
+  width: 100%;
+  max-width: 100%; /* Permite ocupar a tela toda no mobile */
+  margin: 0;
+  padding: 10px 0;
+  overflow: visible; /* Garante que o conteúdo não seja cortado abruptamente */
+}
+
+.rooms-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  /* padding vai no container que scrolla */
+  box-sizing: border-box;
+}
+
+.rooms-carousel-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  gap: 12px;
+
+  /* ✅ padding aqui (não no wrapper) */
+  padding: 0 16px 20px;
+
+  /* ✅ melhora snap sem cortar */
+  scroll-padding-left: 16px;
+  scroll-padding-right: 16px;
+
+  /* ✅ evita “puxar” horizontal demais */
+  overscroll-behavior-x: contain;
+
+  /* Habilita o scroll e o toque corretamente */
+  touch-action: pan-x;
+  cursor: grab;
+  user-select: none;
+}
+
+.rooms-carousel-container.is-dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: grabbing;
+}
+
+/* Setas de Navegação (Apenas Desktop) */
+.carousel-arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(38, 50, 79, 0.1);
+  color: #26324F;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.carousel-arrow:hover {
+  background: #26324F;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(38, 50, 79, 0.2);
+}
+
+.carousel-arrow--prev {
+  left: -20px;
+}
+
+.carousel-arrow--next {
+  right: -20px;
+}
+
+/* Esconde a scrollbar */
+.rooms-carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.rooms-carousel-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.rooms-carousel-container .room-card--v2 {
+  /* 100% da viewport MENOS os paddings laterais do container (16px + 16px) */
+  flex: 0 0 calc(100% - 32px);
+  width: calc(100% - 32px);
+
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.room-card--v2 {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+  border: 1px solid rgba(38, 50, 79, 0.08);
+  transform: translateZ(0);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.room-card__media {
+  position: relative;
+
+  /* altura controlada no mobile (não fica gigante nem some) */
+  height: clamp(150px, 42vw, 200px);
+
+  background: #f3f4f6;
+}
+
+.room-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.room-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, .45) 100%);
+}
+
+.room-card__badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .95);
+  color: #26324F;
+  font-weight: 800;
+  font-size: 10px;
+  /* Menor no mobile */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+  z-index: 2;
+}
+
+.room-card__pill {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 10px;
+  z-index: 2;
+}
+
+.room-card__pill--best {
+  background: #FCC62C;
+  color: #26324F;
+  box-shadow: 0 4px 12px rgba(252, 198, 44, .3);
+}
+
+.room-card__body { padding: 10px; }
+
+.room-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.room-card__title {
+  margin: 0;
+  color: #26324F;
+  font-size: 16px;
+  /* Reduzido de 18px */
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.room-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.room-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(69, 211, 192, .12);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.room-card__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; /* antes era 2 */
+  line-clamp: 1;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.room-card__chips {
+  display: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.room-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #26324F;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.room-card__footer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-card__pricebox {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  text-align: left;
+}
+
+.room-card__price-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-card__price-label {
+  color: #71717a;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.room-card__price-sub {
+  color: #71717a;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.room-card__price {
+  margin-top: 2px;
+  color: #26324F;
+  font-weight: 800;
+  font-size: 18px;
+  /* Reduzido de 22px */
+}
+
+.room-card__fineprint {
+  display: none;
+  margin-top: 2px;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 9px;
+}
+
+.room-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  /* Mais fino no mobile */
+  border-radius: 10px;
+  background: #26324F;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(38, 50, 79, .2);
+  transition: all .2s ease;
+}
+
+.room-card__cta:active {
+  transform: scale(.98);
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.carousel-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-dot.active {
+  background: #26324F;
+  transform: scale(1.2);
+}
+
+/* --- Loader de Resort Divertido --- */
+.resort-loader {
+  padding: 40px 20px;
+  text-align: center;
+  background: linear-gradient(to bottom, #f0f9ff 0%, #ffffff 100%);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin: 20px auto;
+  max-width: 600px;
+  animation: fadeIn 0.4s ease-out;
+  overflow: hidden;
+}
+
+.resort-loader__scene {
+  position: relative;
+  height: 120px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Sol Animado */
+.sun {
+  position: absolute;
+  top: 0;
+  right: 20%;
+  width: 40px;
+  height: 40px;
+  background: #ffcc00;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #ffcc00;
+  animation: sunPulse 3s ease-in-out infinite;
+}
+
+/* Palmeira Animada */
+.palm-tree {
+  position: relative;
+  width: 60px;
+  height: 100px;
+  z-index: 2;
+}
+
+.trunk {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 80px;
+  background: #8b4513;
+  border-radius: 6px 6px 0 0;
+}
+
+.leaves {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100px;
+  height: 60px;
+  transform: translateX(-50%);
+  animation: palmSway 3s ease-in-out infinite;
+}
+
+.leaf {
+  position: absolute;
+  top: 20px;
+  width: 50px;
+  height: 20px;
+  background: #228b22;
+  border-radius: 50% 50% 0 50%;
+}
+
+.leaf-1 { left: 0; transform: rotate(20deg); }
+.leaf-2 { right: 0; transform: rotate(-20deg) scaleX(-1); }
+.leaf-3 { left: 10px; top: 0; transform: rotate(60deg); }
+.leaf-4 { right: 10px; top: 0; transform: rotate(-60deg) scaleX(-1); }
+
+/* Bola de Praia */
+.beach-ball {
+  position: absolute;
+  bottom: 10px;
+  left: 25%;
+  width: 30px;
+  height: 30px;
+  background: conic-gradient(#ff3b3b 0% 25%, #ffffff 25% 50%, #3b82f6 50% 75%, #ffcc00 75% 100%);
+  border-radius: 50%;
+  animation: ballBounce 1.5s ease-in-out infinite;
+  z-index: 3;
+}
+
+.sand {
+  position: absolute;
+  bottom: 0;
+  width: 150px;
+  height: 10px;
+  background: #f3e5ab;
+  border-radius: 50% 50% 0 0;
+}
+
+.resort-loader__title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #26324F;
+  margin-bottom: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.resort-loader__subtitle {
+  font-size: 15px;
+  color: #64748b;
+  margin-bottom: 32px;
+}
+
+/* Animações */
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes palmSway {
+  0%, 100% { transform: translateX(-50%) rotate(-2deg); }
+  50% { transform: translateX(-50%) rotate(5deg); }
+}
+
+@keyframes ballBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+ /* Checkout Panel */
+ .checkout-panel {
+   margin: 24px auto 0;
+   max-width: 1040px;
+   --checkout-payment-bg: var(--bg-dark);
+   background: var(--checkout-payment-bg, linear-gradient(145deg, #6cc7b8, #72c8b6 40%, #6dbdb3 100%));
+   border-radius: 20px;
+   padding: 24px 20px 28px;
+   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+ }
+ 
+ .checkout-panel__inner {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+ }
+ 
+ .checkout-panel__header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 8px;
+ }
+ 
+ .checkout-panel__header h3 {
+   font-size: 18px;
+   font-weight: 700;
+   color: #0f172a;
+ }
+ 
+ .checkout-panel__close {
+   border: none;
+   background: transparent;
+   font-size: 22px;
+   line-height: 1;
+   cursor: pointer;
+   color: #64748b;
+ }
+ 
+ .checkout-panel__summary {
+   display: none;
+ }
+ 
+ .checkout-panel__summary h4 {
+   font-size: 16px;
+   font-weight: 700;
+   color: #0f172a;
+   margin-bottom: 4px;
+ }
+ 
+ .checkout-panel__summary p {
+   font-size: 13px;
+   color: #64748b;
+   margin-bottom: 2px;
+ }
+ 
+ .checkout-form {
+   margin-top: 8px;
+ }
+ 
+ .checkout-form__grid {
+   display: grid;
+   grid-template-columns: 1fr;
+   gap: 12px 16px;
+   margin-bottom: 16px;
+ }
+ 
+ .checkout-field {
+   text-align: left;
+ }
+ 
+ .checkout-field label {
+   display: block;
+   font-size: 13px;
+   color: #475569;
+   margin-bottom: 4px;
+ }
+ 
+ .checkout-field input {
+   width: 100%;
+   border-radius: 10px;
+   border: 1px solid #e2e8f0;
+   padding: 8px 10px;
+   font-size: 14px;
+   outline: none;
+ }
+ 
+ .checkout-field input:focus {
+   border-color: #ec4899;
+   box-shadow: 0 0 0 1px rgba(236, 72, 153, 0.3);
+ }
+ 
+.checkout-select-textfield {
+  width: 100%;
+  min-width: 160px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: #ffffff;
+  color: inherit;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%23647569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+.checkout-select-textfield:focus {
+  border-color: #ec4899;
+  box-shadow: 0 0 0 1px rgba(236, 72, 153, 0.3);
+}
+
+.checkout-select-textfield:focus-visible {
+  border-color: #ec4899;
+  box-shadow: 0 0 0 1px rgba(236, 72, 153, 0.3);
+}
+
+ .checkout-submit {
+   margin-top: 4px;
+   width: 100%;
+ }
+ 
+.checkout-payment {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.checkout-payment__label {
+  display: block;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.checkout-payment__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.checkout-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.checkout-card-fields {
+  margin-bottom: 12px;
+}
+
+.checkout-card-preview {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  height: 210px;
+  margin: 8px 0 12px;
+  perspective: 1000px;
+}
+
+.creditcard {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: var(--card-bg, linear-gradient(145deg, #0f172a, #1f2937));
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
+  padding: 16px;
+  transition: transform 0.4s ease, opacity 0.4s ease, background 0.3s ease;
+  backface-visibility: hidden;
+}
+
+.creditcard--front {
+  opacity: 1;
+  transform: rotateY(0deg);
+}
+
+.creditcard--back {
+  opacity: 0;
+  transform: rotateY(180deg);
+}
+
+.checkout-card-preview.show-back .creditcard--front {
+  opacity: 0;
+  transform: rotateY(180deg) scale(0.98);
+}
+
+.checkout-card-preview.show-back .creditcard--back {
+  opacity: 1;
+  transform: rotateY(0deg) scale(1);
+}
+
+.creditcard__brand {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.creditcard__chip {
+  width: 46px;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.25);
+  margin-bottom: 18px;
+}
+
+.creditcard__number {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 2px;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.creditcard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.creditcard__label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #9ca3af;
+}
+
+.creditcard__holder {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.creditcard__expiry {
+  font-weight: 700;
+}
+
+.creditcard__stripe {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: #111827;
+}
+
+.creditcard__cvvbox {
+  position: absolute;
+  bottom: 28px;
+  right: 16px;
+  background: #f3f4f6;
+  color: #111827;
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+  min-width: 86px;
+  text-align: right;
+}
+
+.creditcard__cvvlabel {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+.checkout-form__grid--card {
+  margin-bottom: 0;
+}
+/* Ajuste para que , CVV e Parcelas caibam na mesma linha */
+.checkout-form__grid--card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Número do cartão e Nome ocupam duas colunas */
+.checkout-form__grid--card .checkout-field:nth-child(1),
+.checkout-form__grid--card .checkout-field:nth-child(2) {
+    grid-column: span 2;
+}
+
+/* , CVV e Parcelas lado a lado */
+.checkout-card-exp-row {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+.checkout-card-exp-row .checkout-field:first-child {
+    flex: 1 1 auto; /* Validade ocupa espaço maior */
+}
+.checkout-card-exp-row .checkout-field:last-child {
+    flex: 0 0 160px; /* CVV mais estreito */
+}
+.checkout-form__grid--card .checkout-card-exp-row {
+    grid-column: span 2; /* ocupa toda a linha da grade do formulário */
+    align-items: end;
+}
+
+.checkout-card-exp-row .checkout-field {
+    margin: 0;
+}
+
+/* Em telas pequenas volta para coluna */
+@media (max-width: 768px) {
+    .checkout-card-exp-row {
+        flex-direction: column;
+    }
+}
+
+/* PIX checkout (layout clean) */
+.checkout-pix-area.pix-area {
+  width: min(920px, 100%);
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+  gap: 32px;
+  align-items: center;
+  justify-items: center;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 26px 55px rgba(15, 23, 42, 0.16);
+}
+
+.pix-left,
+.pix-right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pix-left {
+  gap: 14px;
+  grid-column: 1;
+  grid-row: 1 / span 4;
+}
+
+.pix-total,
+.pix-countdown-glass,
+.pix-trust,
+.pix-expired {
+  grid-column: 2;
+}
+
+.pix-total { grid-row: 1; }
+.pix-countdown-glass { grid-row: 2; justify-self: center; }
+.pix-trust { grid-row: 3; }
+.pix-expired { grid-row: 4; }
+
+.pix-right {
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.pix-instruction {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.pix-total {
+  width: auto;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  text-align: center;
+}
+
+.pix-total__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pix-total__value {
+  font-size: 38px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.pix-qr-wrap {
+  width: min(280px, 100%);
+  max-width: 280px;
+  aspect-ratio: 1 / 1;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: grid;
+  place-items: center;
+}
+
+.pix-qrcode {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.pix-copy-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 163, 74, 0.30);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
+  width: auto;
+  min-width: 200px;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(22, 163, 74, 0.22);
+  margin-bottom: 28px;
+}
+
+.pix-copy-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.pix-copy-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.pix-copy-btn__icon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  line-height: 1;
+}
+
+.pix-copy-btn__text {
+  line-height: 1;
+}
+
+.checkout-form__grid--card .checkout-field {
+  margin-top: 4px;
+}
+
+ .checkout-message {
+   margin-top: 8px;
+   font-size: 13px;
+ }
+ 
+ .checkout-message.success {
+   color: #16a34a;
+ }
+ 
+ .checkout-message.error {
+   color: #dc2626;
+ }
+ 
+ .checkout-message.loading {
+   color: #0f172a;
+ }
+
+.checkout-summary-card {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  align-items: center;
+}
+
+.checkout-summary-card__media {
+  width: 160px;
+  height: 110px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.checkout-summary-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.checkout-summary-card__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.checkout-summary-card__subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.checkout-summary-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.checkout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.checkout-summary-card__total {
+  text-align: right;
+}
+
+.checkout-summary-card__total small {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.checkout-summary-card__total strong {
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.checkout-section-title {
+  margin: 6px 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.checkout-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkout-radio input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  position: relative;
+}
+
+.checkout-radio input:checked {
+  border-color: #0f172a;
+  background: radial-gradient(#0f172a 0 45%, transparent 46% 100%);
+}
+
+.checkout-radio__icon {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.checkout-radio__label {
+  font-weight: 700;
+}
+
+.pix-copy-btn.is-copied {
+  background: #0f172a;
+  border-color: #0f172a;
+}
+
+.pix-countdown {
+  display: block;
+  width: auto;
+  margin-inline: auto;
+  align-self: center;
+  font-weight: 900;
+  font-size: 36px;
+  line-height: 1;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+.pix-countdown::before {
+  content: none;
+}
+
+.pix-countdown.is-urgent {
+  color: #dc2626;
+  animation: pix-pulse 1s infinite;
+}
+
+.pix-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.pix-trust__badge img {
+  display: block;
+}
+
+.pix-trust__badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+@keyframes pix-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pix-expired {
+  font-size: 14px;
+  font-weight: 800;
+  color: #dc2626;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .checkout-pix-area.pix-area {
+    grid-template-columns: 1fr;
+  }
+
+  .pix-total,
+  .pix-countdown-glass,
+  .pix-trust,
+  .pix-expired {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .pix-left {
+    grid-row: auto;
+  }
+
+  .pix-qr-wrap {
+    max-width: 300px;
+  }
+
+  .pix-copy-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pix-countdown {
+    font-size: 32px;
+  }
+}
+ 
+ @media (min-width: 640px) {
+   .checkout-form__grid {
+     grid-template-columns: repeat(2, 1fr);
+   }
+ 
+   .checkout-submit {
+     width: auto;
+   }
+ }
+ 
+ /* Skeleton Effect (mantido anterior) */
+.skeleton-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+}
+
+.skeleton-media {
+  width: 100%;
+  aspect-ratio: 21/9;
+  background: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-body {
+  padding: 16px;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-line.title { height: 18px; width: 60%; margin-bottom: 16px; }
+.skeleton-line.text { width: 100%; }
+.skeleton-line.text.short { width: 40%; }
+
+.skeleton-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.skeleton-price { width: 80px; height: 24px; background: #e2e8f0; border-radius: 4px; }
+.skeleton-button { width: 100px; height: 36px; background: #cbd5e1; border-radius: 8px; }
+
+/* Shimmer Animation */
+.skeleton-media::after,
+.skeleton-line::after,
+.skeleton-price::after,
+.skeleton-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-waves {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.3; }
+  50% { transform: translateX(-50%) scale(1.5); opacity: 0.1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (min-width: 768px) {
+  .resort-loader {
+    padding: 60px 40px;
+    max-width: 800px;
+  }
+  .skeleton-media { aspect-ratio: 16/7; }
+}
+
+/* Tablet e Desktop */
+@media (min-width: 768px) {
+  #availability-results {
+    max-width: 1200px; /* Ocupa a largura total do container */
+    margin: 30px auto;
+  }
+  
+  .rooms-carousel-wrapper {
+    padding: 0 50px; /* Espaço para as setas não ficarem em cima do card */
+  }
+
+  .rooms-carousel-container .room-card--v2 {
+    flex: 0 0 calc(33.333% - 14px); /* Exibe 3 quartos (ajustado para o gap) */
+    scroll-snap-align: start; /* Melhor alinhamento para múltiplos itens */
+  }
+
+  .room-card__media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .room-card__title {
+    font-size: 20px;
+  }
+  
+  .room-card__body {
+    padding: 20px;
+  }
+
+  .room-card__price {
+    font-size: 22px;
+  }
+
+  .room-card__cta {
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  .carousel-arrow {
+    display: flex;
+  }
+
+  .carousel-arrow--prev {
+    left: 0;
+  }
+
+  .carousel-arrow--next {
+    right: 0;
+  }
+}
+/* Wrapper que posiciona cartão e formulário lado a lado */
+.checkout-card-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap; /* responsivo */
+}
+
+/* Área do cartão */
+.checkout-card-preview {
+    flex: 1;
+    min-width: 280px;
+    max-width: 380px;
+}
+
+/* Área do formulário */
+.checkout-form-wrapper {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Grid dos campos */
+.checkout-form__grid--card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Mantém alguns campos maiores */
+.checkout-field:nth-child(1),
+.checkout-field:nth-child(2) {
+    grid-column: span 2;
+}
+
+/* Mobile: vira coluna */
+@media (max-width: 768px) {
+    .checkout-card-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .checkout-form__grid--card {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-field {
+        grid-column: span 1 !important;
+    }
+}
+
+.pix-countdown-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* força centralização interna */
+
+  gap: 8px;
+  padding: 10px 18px;
+
+  /* força centralização externa */
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto; 
+  justify-self: center;
+  align-self: center;
+
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f172a;
+
+  /* garante centralização mesmo dentro de grid ou flex */
+  display: flex;
+}
+ 
+.pix-countdown-icon { 
+  font-size: 24px; 
+  opacity: 0.9; 
+}
+/* CARTÃO CORES */
+
+/* VISA */
+.card-visa {
+  --card-bg: linear-gradient(135deg, #1A1F71, #1A46FF);
+}
+
+/* MASTERCARD */
+.card-mastercard {
+  --card-bg: linear-gradient(135deg, #EB001B, #F79E1B);
+}
+
+/* AMEX */
+.card-amex {
+  --card-bg: linear-gradient(135deg, #000000, #000000);
+}
+
+/* ELO */
+.card-elo {
+  --card-bg: linear-gradient(135deg, #1ac300, #126905);
+}
+
+/* DISCOVER */
+.card-discover {
+  --card-bg: linear-gradient(135deg, #FF6A00, #FFB800);
+}
+
+/* DEFAULT */
+.card-default {
+  --card-bg: linear-gradient(135deg, #0f172a, #1f2937);
+}
