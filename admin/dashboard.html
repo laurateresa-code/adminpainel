@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projetos — Painel Corporativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root{--bg:#1b2438;--bg-alt:#26324F;--card:#20293f;--text:#e5e7eb;--muted:#94a3b8;--border:#38425f;--primary:#45D3C0;--primary-2:#FCC62C;--danger:#ef4444;--radius:14px}
+        *{box-sizing:border-box}
+        body{margin:0;background:radial-gradient(1200px 600px at 0% 0%, rgba(252,198,44,0.12), transparent 60%),radial-gradient(800px 500px at 100% 100%, rgba(69,211,192,0.12), transparent 50%),linear-gradient(180deg, var(--bg), var(--bg-alt));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+        .shell{max-width:1200px;margin:0 auto;padding:24px}
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .title{display:flex;align-items:center;gap:12px}
+        .title h1{margin:0;font-size:24px;font-weight:600}
+        .subtitle{color:var(--muted);font-size:13px}
+        .user{display:flex;align-items:center;gap:10px}
+        .logout{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+        .actions{display:flex;gap:12px;align-items:center;margin:20px 0 8px 0;flex-wrap:wrap}
+        .search{position:relative;flex:1;min-width:240px}
+        .search input{width:100%;padding:12px 14px 12px 40px;border-radius:12px;border:1px solid var(--border);background:#0f1523;color:var(--text);outline:none}
+        .search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8a93a6}
+        .filters{display:flex;gap:10px}
+        .filters select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0f1523;color:var(--text);cursor:pointer}
+        .view-toggle{display:flex;gap:8px;background:#0f1523;border:1px solid var(--border);border-radius:12px;padding:4px}
+        .view-btn{padding:8px 12px;border:none;background:transparent;color:var(--muted);border-radius:8px;cursor:pointer}
+        .view-btn.active{color:#fff;background:#1a2030}
+        .new-project{margin-left:auto;background:linear-gradient(180deg,var(--primary),#36BFAE);color:#fff;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;box-shadow:0 0 0 3px rgba(69,211,192,0.18),0 12px 36px rgba(69,211,192,0.35)}
+        .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
+        @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:640px){.grid{grid-template-columns:1fr}}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 16px 40px rgba(0,0,0,0.35);padding:16px;position:relative;min-height:160px;display:flex;flex-direction:column;gap:8px;transition:transform .15s ease,box-shadow .2s ease}
+        .card::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:4px;background:linear-gradient(180deg,var(--primary),var(--primary-2))}
+        .card:hover{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(69,211,192,0.18),0 20px 56px rgba(0,0,0,0.45)}
+        .status{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;text-transform:capitalize}
+        .status{border:1px solid var(--border)}
+        .status.rascunho{background:#121826;color:#cbd5e1;border-color:#2a334d}
+        .status.publicado{background:rgba(69,211,192,0.12);color:#45D3C0;border-color:rgba(69,211,192,0.4)}
+        .status.finalizado{background:rgba(252,198,44,0.12);color:#FCC62C;border-color:rgba(252,198,44,0.45)}
+        .actions-mini{position:absolute;top:12px;right:12px;display:flex;gap:8px}
+        .mini-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:#0f1523;color:#cbd5e1;cursor:pointer;transition:box-shadow .2s ease,background .2s ease}
+        .mini-btn:hover{box-shadow:0 0 0 3px rgba(69,211,192,0.18);background:#131a2a}
+        .card-title{font-weight:600}
+        .meta{color:var(--muted);font-size:12px}
+        .status-select-mini{position:absolute;bottom:12px;right:12px;background:#0f1523;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px;box-shadow:0 0 0 0 rgba(69,211,192,0);transition:box-shadow .2s ease}
+        .status-select-mini:focus{box-shadow:0 0 0 3px rgba(252,198,44,0.18);outline:none}
+        .add{border:1px dashed var(--border);background:transparent;display:flex;align-items:center;justify-content:center;gap:8px;color:#cbd5e1}
+        .loading{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+        .sk{background:#121826;border:1px solid var(--border);border-radius:var(--radius);height:160px;animation:pulse 1.2s ease-in-out infinite}
+        @keyframes pulse{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+        .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px}
+        .table-wrap{margin-top:16px;border:1px solid var(--border);border-radius:12px;overflow:auto}
+        table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);color:var(--text)}
+        th,td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px}
+        th{text-align:left;background:#121826;position:sticky;top:0}
+        tbody tr{transition:background .15s ease}
+        tbody tr:hover{background:#141c2e}
+        .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000}
+        .modal-content{width:100%;max-width:520px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.35);padding:20px}
+        .modal-title{font-size:18px;font-weight:600;margin:0 0 12px 0}
+        .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+        .field input,.field textarea,.field select{background:#0f1523;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);outline:none}
+        .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+        .btn{border:none;border-radius:10px;padding:10px 12px;cursor:pointer}
+        .btn-primary{background:linear-gradient(180deg,var(--primary),#36BFAE);color:#fff;box-shadow:0 0 0 3px rgba(69,211,192,.18)}
+        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .error-msg{color:var(--danger);font-size:12px;min-height:18px}
+        .field input.error{border-color:var(--danger)}
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="header">
+            <div class="title">
+                <i class="fa-solid fa-layer-group" style="color: var(--primary); font-size: 20px;"></i>
+                <div>
+                    <h1>Projetos</h1>
+                    <div class="subtitle">Gerencie os sites e layouts corporativos</div>
+                </div>
+            </div>
+            <div class="user">
+                <span id="user-email">Carregando...</span>
+                <button class="logout" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="search-input" type="text" placeholder="Buscar projeto...">
+            </div>
+            <div class="filters">
+                <select id="filter-month">
+                    <option value="">Todos os meses</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+                <select id="filter-year">
+                    <option value="">Todos os anos</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+                <select id="filter-status">
+                    <option value="">Todos os status</option>
+                    <option value="rascunho">Rascunho</option>
+                    <option value="publicado">Publicado</option>
+                    <option value="finalizado">Finalizado</option>
+                </select>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" id="view-cards">Cards</button>
+                <button class="view-btn" id="view-table">Tabela</button>
+            </div>
+            <button class="new-project" id="new-project-btn"><i class="fa-solid fa-plus"></i> Novo Projeto</button>
+        </div>
+        <div id="projects-grid" class="grid"></div>
+        <div id="projects-table-wrap" class="table-wrap" style="display:none">
+            <table id="projects-table">
+                <thead>
+                    <tr>
+                        <th>Projeto</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Última edição</th>
+                        <th>Data criação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="projects-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-title">Criar novo projeto</div>
+            <form id="create-form">
+                <div class="field">
+                    <label for="project-name">Nome do projeto</label>
+                    <input id="project-name" type="text" required>
+                </div>
+                <div class="field">
+                    <label for="project-client">Cliente</label>
+                    <input id="project-client" type="text">
+                </div>
+                <div class="field">
+                    <label for="project-type">Tipo de layout</label>
+                    <select id="project-type">
+                        <option value="">Selecionar</option>
+                        <option value="landing">Landing</option>
+                        <option value="institucional">Institucional</option>
+                        <option value="ecommerce">E-commerce</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="project-notes">Observações</label>
+                    <textarea id="project-notes" rows="3"></textarea>
+                </div>
+                <div class="field">
+                    <label for="project-assets">Upload de assets</label>
+                    <input id="project-assets" type="file" multiple>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="cancel-create">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-create">Criar projeto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="rename-modal">
+        <div class="modal-content">
+            <div class="modal-title">Renomear projeto</div>
+            <form id="rename-form">
+                <div class="field">
+                    <label for="rename-name">Novo nome</label>
+                    <input id="rename-name" type="text" required>
+                    <div id="rename-error" class="error-msg"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="cancel-rename">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="confirm-rename" disabled>Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
