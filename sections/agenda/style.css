@@ -42,6 +42,10 @@
 
 #agendaTitle {
   scroll-margin-top: calc(var(--countdown-h) + 120px);
+  font-size: clamp(24px, 4vw, 42px) !important;
+  color: #fff !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
 }
 
 .selectors {
@@ -301,8 +305,11 @@
 .calendar__title {
   text-align: center;
   font-weight: 800;
-  color: var(--color-calendar-title);
+  color: #fff !important;
   margin-bottom: 10px;
+  font-size: 24px !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
 }
 
 .calendar__weekdays {
@@ -312,16 +319,33 @@
   font-weight: 800;
   font-family: var(--font-heading);
   margin-bottom: 8px;
+  color: #fff !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+.selectors__note {
+  color: #fff !important;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .calendar__grid .day {
   cursor: pointer;
+  color: #fff !important;
+  background: transparent;
+  font-weight: 700;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+  border: none;
 }
 
 .day.is-selected,
 .day.in-range {
-  outline: 2px solid var(--color-pink);
-  background: var(--color-pink-light);
+  outline: none;
+  background: var(--color-pink);
+  color: #fff !important;
+  border-radius: 8px;
 }
 
 .day.range-start {

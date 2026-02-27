@@ -103,8 +103,10 @@ async function loadConfig() {
              if (node.nodeType === 1) {
                  if (node.hasAttribute('data-config-src') || 
                      node.hasAttribute('data-config-text') || 
+                     node.hasAttribute('data-config-html') || 
                      node.querySelector('[data-config-src]') || 
-                     node.querySelector('[data-config-text]')) {
+                     node.querySelector('[data-config-text]') ||
+                     node.querySelector('[data-config-html]')) {
                      shouldUpdate = true;
                      break;
                  }

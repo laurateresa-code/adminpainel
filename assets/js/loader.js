@@ -3,7 +3,8 @@ const loadSections = async () => {
   for (const ph of placeholders) {
     const path = ph.getAttribute('data-include');
     try {
-      const res = await fetch(path);
+      const timestamp = new Date().getTime();
+      const res = await fetch(`${path}?t=${timestamp}`);
       const html = await res.text();
       ph.outerHTML = html;
       if (path && path.includes('sections/agenda/section.html')) {
@@ -21,8 +22,8 @@ const loadSections = async () => {
         }, 50);
       }
       const base = path.replace(/\/[^/]+$/, '');
-      const cssURL = `${base}/style.css`;
-      const jsURL = `${base}/section.js`;
+      const cssURL = `${base}/style.css?t=${timestamp}`;
+      const jsURL = `${base}/section.js?t=${timestamp}`;
       try {
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';

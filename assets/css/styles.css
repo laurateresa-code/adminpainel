@@ -20,7 +20,7 @@ h2, .h2 { font-size: var(--h2-size); }
 
 .retro-title {
   font-family: var(--font-heading);
-  font-size: clamp(32px, 6vw, 64px) !important;
+  font-size: var(--h1-size) !important;
   font-weight: 900 !important;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -276,8 +276,8 @@ img { max-width: 100%; height: auto; display: block; }
 .day--available { border-color: var(--color-primary); color: #2b2100; background: #fff; }
 
 /* Carrossel */
-.feedback { background: var(--bg-feedback, var(--bg-badges)); padding: 32px 0; }
-.feedback__inner { display: grid; justify-items: center; gap: 16px; }
+.feedback { background: var(--bg-feedback, var(--bg-badges)); padding: 100px 0; }
+.feedback__inner { display: grid; justify-items: center; gap: 16px; align-content: center; }
 .feedback__title {
   text-align: center;
   font-family: var(--font-heading);

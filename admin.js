@@ -636,6 +636,7 @@ function renderUsersTable() {
 function setupTopbarActions() {
   const actions = document.querySelector('.topbar .actions');
   if (!actions) return;
+  setupPanelSearch();
   const buttons = actions.querySelectorAll('.icon-btn');
   const bellBtn = buttons[0];
   const menuBtn = buttons[1];
@@ -662,8 +663,189 @@ function setupTopbarActions() {
     if (!pop) return;
     const actionsEl = document.querySelector('.topbar .actions');
     if (!actionsEl) return;
-    if (!pop.contains(e.target) && !actionsEl.contains(e.target)) {
+    const searchEl = document.querySelector('.topbar .search');
+    if (!pop.contains(e.target) && !actionsEl.contains(e.target) && !(searchEl && searchEl.contains(e.target))) {
       pop.remove();
+    }
+  });
+}
+
+function normalizeSearchText(text) {
+  const base = String(text || '').toLowerCase();
+  try {
+    return base.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  } catch {
+    return base;
+  }
+}
+
+function setupPanelSearch() {
+  const searchWrap = document.querySelector('.topbar .search');
+  const input = searchWrap ? searchWrap.querySelector('input') : null;
+  if (!searchWrap || !input || input.dataset.bound === 'true') return;
+  input.dataset.bound = 'true';
+
+  const removeSearchPopover = () => {
+    const existing = document.querySelector('.search-popover');
+    if (existing) existing.remove();
+  };
+
+  const openTabById = (tabId) => {
+    if (!tabId) return false;
+    const nav = document.querySelector(`.nav-item[data-target="${String(tabId).replace(/"/g, '\\"')}"]`);
+    if (nav) {
+      nav.click();
+      return true;
+    }
+    return false;
+  };
+
+  const flashElement = (el) => {
+    if (!el) return;
+    const target = el.closest('.form-group') || el.closest('.config-card') || el;
+    const prevOutline = target.style.outline;
+    const prevOutlineOffset = target.style.outlineOffset;
+    const prevBorderRadius = target.style.borderRadius;
+    target.style.outline = '2px solid #45D3C0';
+    target.style.outlineOffset = '4px';
+    target.style.borderRadius = '12px';
+    window.setTimeout(() => {
+      target.style.outline = prevOutline;
+      target.style.outlineOffset = prevOutlineOffset;
+      target.style.borderRadius = prevBorderRadius;
+    }, 1200);
+  };
+
+  const collectResults = (term) => {
+    const results = [];
+    const seen = new Set();
+
+    const navItems = Array.from(document.querySelectorAll('.sidebar-nav .nav-item'));
+    navItems.forEach((btn) => {
+      const label = (btn.textContent || '').trim();
+      const tabId = btn.getAttribute('data-target');
+      if (!label || !tabId) return;
+      if (!normalizeSearchText(label).includes(term)) return;
+      const key = `tab:${tabId}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      results.push({ kind: 'tab', tabId, label, subtitle: 'Seção' });
+    });
+
+    const tabContents = Array.from(document.querySelectorAll('.tab-content[id]'));
+    tabContents.forEach((tab) => {
+      const tabId = tab.id;
+      const tabTitle = (document.querySelector(`.nav-item[data-target="${String(tabId).replace(/"/g, '\\"')}"]`)?.textContent || tabId).trim();
+      const nodes = Array.from(tab.querySelectorAll('h4, label, h3.section-title'));
+      nodes.forEach((node) => {
+        const text = (node.textContent || '').trim();
+        if (!text) return;
+        if (!normalizeSearchText(text).includes(term)) return;
+        const key = `node:${tabId}:${text}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        results.push({ kind: 'node', tabId, label: text, subtitle: tabTitle, node });
+      });
+    });
+
+    return results.slice(0, 12);
+  };
+
+  const showPopover = (term) => {
+    removeSearchPopover();
+    const results = collectResults(term);
+
+    const pop = document.createElement('div');
+    pop.className = 'popover search-popover';
+
+    const header = document.createElement('div');
+    header.className = 'popover-header';
+    header.textContent = results.length ? `Resultados (${results.length})` : 'Nenhum resultado';
+    pop.appendChild(header);
+
+    const list = document.createElement('ul');
+    list.className = 'popover-list';
+
+    if (!results.length) {
+      const li = document.createElement('li');
+      li.className = 'popover-item';
+      li.textContent = 'Nenhum item encontrado para esta busca';
+      list.appendChild(li);
+    } else {
+      results.forEach((r, idx) => {
+        const li = document.createElement('li');
+        li.className = 'popover-item';
+        li.dataset.idx = String(idx);
+
+        const icon = document.createElement('i');
+        icon.className = r.kind === 'tab' ? 'fa-solid fa-folder-open' : 'fa-solid fa-magnifying-glass';
+
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.flexDirection = 'column';
+        wrap.style.gap = '2px';
+
+        const title = document.createElement('div');
+        title.textContent = r.label;
+        const sub = document.createElement('div');
+        sub.style.fontSize = '12px';
+        sub.style.color = 'var(--text-muted)';
+        sub.textContent = r.subtitle || '';
+
+        wrap.appendChild(title);
+        wrap.appendChild(sub);
+
+        li.appendChild(icon);
+        li.appendChild(wrap);
+
+        li.addEventListener('click', () => {
+          removeSearchPopover();
+          const opened = openTabById(r.tabId);
+          if (opened && r.kind === 'node' && r.node) {
+            window.setTimeout(() => {
+              try {
+                r.node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                flashElement(r.node);
+              } catch {}
+            }, 50);
+          }
+        });
+
+        list.appendChild(li);
+      });
+    }
+
+    pop.appendChild(list);
+    document.body.appendChild(pop);
+
+    const rect = searchWrap.getBoundingClientRect();
+    pop.style.left = `${Math.round(rect.left + window.scrollX)}px`;
+    pop.style.top = `${Math.round(rect.bottom + window.scrollY + 8)}px`;
+    pop.style.right = 'auto';
+    pop.style.width = `${Math.max(260, Math.round(rect.width))}px`;
+  };
+
+  input.addEventListener('input', () => {
+    const term = normalizeSearchText(input.value).trim();
+    if (!term) {
+      removeSearchPopover();
+      return;
+    }
+    showPopover(term);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      input.value = '';
+      removeSearchPopover();
+      return;
+    }
+    if (e.key === 'Enter') {
+      const first = document.querySelector('.search-popover .popover-item[data-idx="0"]');
+      if (first) {
+        e.preventDefault();
+        first.click();
+      }
     }
   });
 }
