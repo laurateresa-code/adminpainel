@@ -359,15 +359,15 @@
 }
 
 .reserve__btn {
-  background: var(--color-pink);
-  color: var(--color-light);
+  background: var(--btn-reserve-bg, var(--color-pink));
+  color: var(--btn-reserve-text, var(--color-light));
   border: none;
   padding: 12px 24px;
   border-radius: 999px;
   font-weight: 800;
   font-family: var(--font-heading);
   cursor: pointer;
-  box-shadow: 0 4px 0 var(--color-primary-dark);
+  box-shadow: 0 4px 0 var(--btn-shadow-color, var(--color-primary-dark));
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
@@ -377,29 +377,29 @@
 }
 
 .reserve__btn:disabled {
-  background: var(--color-pink);
+  background: var(--btn-reserve-bg, var(--color-pink));
   /* Mantém a cor rosa */
-  color: var(--color-light);
+  color: var(--btn-reserve-text, var(--color-light));
   cursor: not-allowed;
   opacity: 1;
   /* Mantém totalmente visível */
   pointer-events: none;
   /* Impede cliques mas mantém visual */
-  box-shadow: 0 4px 0 var(--color-primary-dark);
+  box-shadow: 0 4px 0 var(--btn-shadow-color, var(--color-primary-dark));
   /* Mantém a sombra */
   transform: none;
   /* Mantém posição */
 }
 
 .reserve__btn.is-disabled {
-  background: var(--color-pink);
+  background: var(--btn-reserve-bg, var(--color-pink));
   /* Mantém a cor rosa */
-  color: var(--color-light);
+  color: var(--btn-reserve-text, var(--color-light));
   cursor: not-allowed;
   opacity: 1;
   /* Mantém totalmente visível */
   pointer-events: auto;
-  box-shadow: 0 4px 0 var(--color-primary-dark);
+  box-shadow: 0 4px 0 var(--btn-shadow-color, var(--color-primary-dark));
   /* Mantém a sombra */
   transform: none;
   /* Mantém posição */
@@ -882,8 +882,7 @@
  .checkout-panel {
    margin: 24px auto 0;
    max-width: 1040px;
-   --checkout-payment-bg: var(--bg-dark);
-   background: var(--checkout-payment-bg, linear-gradient(145deg, #6cc7b8, #72c8b6 40%, #6dbdb3 100%));
+   background: var(--bg-surface, #f7f7f8);
    border-radius: 20px;
    padding: 24px 20px 28px;
    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);

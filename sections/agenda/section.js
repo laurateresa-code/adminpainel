@@ -24,7 +24,7 @@
   let pixCreatedAt = null;
   let pixFakePaidTimer = null;
 
-  const USE_FAKE_PIX = true;
+  const USE_FAKE_PIX = false;
 
   // Elementos fixos
   const adultsEl = document.getElementById('qty-adults');
@@ -1043,7 +1043,7 @@
     const brandContainer = document.getElementById('cc-brand');
     if (!container) return;
     const digitsOnly = (s) => (s || '').replace(/\D+/g, '');
-    const fmtCard = (s) => digitsOnly(s).slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+    const fmtCard = (s) => digitsOnly(s).slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
     const fmtExp = (s) => {
       const d = digitsOnly(s).slice(0, 4);
       let mm = d.slice(0, 2);
@@ -1064,7 +1064,6 @@
       if (yy.length === 2) {
         let y = Number(yy);
         if (!Number.isFinite(y)) y = 0;
-        if (y > 31) y = 31;
         yy = String(y).padStart(2, '0');
       }
 
@@ -1423,6 +1422,31 @@
 
       if (!firstName || !lastName || !email || !cpf || !phone || !zipCode) return;
 
+      // Validação de CPF
+      const isValidCPF = (str) => {
+        let s = str.replace(/[^\d]+/g, '');
+        if (s.length !== 11 || /^(\d)\1+$/.test(s)) return false;
+        let sum = 0, rem;
+        for (let i = 1; i <= 9; i++) sum += parseInt(s.substring(i - 1, i)) * (11 - i);
+        rem = (sum * 10) % 11;
+        if (rem === 10 || rem === 11) rem = 0;
+        if (rem !== parseInt(s.substring(9, 10))) return false;
+        sum = 0;
+        for (let i = 1; i <= 10; i++) sum += parseInt(s.substring(i - 1, i)) * (12 - i);
+        rem = (sum * 10) % 11;
+        if (rem === 10 || rem === 11) rem = 0;
+        if (rem !== parseInt(s.substring(10, 11))) return false;
+        return true;
+      };
+
+      if (!isValidCPF(cpf)) {
+        if (checkoutMessageEl) {
+          checkoutMessageEl.textContent = 'CPF inválido. Verifique os números.';
+          checkoutMessageEl.className = 'checkout-message error';
+        }
+        return;
+      }
+
       let cardNumber = '';
       let cardHolder = '';
       let cardExp = '';
@@ -1431,7 +1455,7 @@
       let installments = 1;
 
       if (!isPix) {
-        cardNumber = (cardNumberInput?.value || '').trim();
+        cardNumber = (cardNumberInput?.value || '').replace(/\s+/g, '');
         cardHolder = (cardHolderInput?.value || '').trim();
         cardExp = (cardExpInput?.value || '').trim();
         cardCvv = (cardCvvInput?.value || '').trim();
@@ -1439,6 +1463,80 @@
         installments = Number(installmentsSelect?.value || 1);
 
         if (!cardNumber || !cardHolder || !cardExp || !cardCvv || !cardBrand || !installments) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Por favor, preencha todos os campos do cartão.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          return;
+        }
+
+        // 1. Validação de Luhn (Número do Cartão)
+        const isValidLuhn = (val) => {
+          let sum = 0;
+          let shouldDouble = false;
+          // Percorre de trás pra frente
+          for (let i = val.length - 1; i >= 0; i--) {
+            let digit = parseInt(val.charAt(i));
+            if (shouldDouble) {
+              if ((digit *= 2) > 9) digit -= 9;
+            }
+            sum += digit;
+            shouldDouble = !shouldDouble;
+          }
+          return (sum % 10) === 0;
+        };
+
+        if (!/^\d+$/.test(cardNumber) || !isValidLuhn(cardNumber)) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Número de cartão inválido. Verifique os dígitos.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          return;
+        }
+
+        // 2. Validação de Validade (MM/AAAA)
+        // Espera formato 12/2025 ou 12/25
+        const expParts = cardExp.split('/');
+        if (expParts.length !== 2) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Data de validade inválida. Use o formato MM/AAAA.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          return;
+        }
+
+        let expMonth = parseInt(expParts[0], 10);
+        let expYear = parseInt(expParts[1], 10);
+
+        // Se o ano for 2 dígitos (ex: 25), assume 2025
+        if (expYear < 100) expYear += 2000;
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1; // Janeiro é 0
+
+        if (isNaN(expMonth) || isNaN(expYear) || expMonth < 1 || expMonth > 12) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Mês de validade inválido.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          return;
+        }
+
+        if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Cartão vencido ou data incorreta.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
+          return;
+        }
+
+        // 3. Validação de CVV (3 ou 4 dígitos)
+        if (!/^\d{3,4}$/.test(cardCvv)) {
+          if (checkoutMessageEl) {
+            checkoutMessageEl.textContent = 'Código de segurança (CVV) inválido.';
+            checkoutMessageEl.className = 'checkout-message error';
+          }
           return;
         }
       }

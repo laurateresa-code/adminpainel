@@ -52,11 +52,22 @@ async function loadConfig() {
     }
 
     // Se falhou no Supabase, tenta local
-    if (!config) {
-      console.log('Carregando configuração local (fallback)...');
+    let defaultConfig = {};
+    try {
       const response = await fetch('config/config.json?t=' + sessionTimestamp);
-      if (!response.ok) throw new Error('Falha ao carregar config.json');
-      config = await response.json();
+      if (response.ok) {
+        defaultConfig = await response.json();
+      }
+    } catch (e) {
+      console.warn('Erro ao carregar config.json para merge:', e);
+    }
+
+    if (!config) {
+      console.log('Usando configuração local (fallback)...');
+      config = defaultConfig;
+    } else {
+      // Merge com defaults para garantir que campos faltantes não quebrem o layout
+      config = deepMerge(defaultConfig, config);
     }
 
     applyMeta(config);
@@ -148,58 +159,54 @@ async function loadConfig() {
     window.dispatchEvent(new Event('configLoaded'));
 
     // Inscrever-se para atualizações em tempo real do Supabase
-    subscribeToChanges();
+    // Retrieve projectId again for the subscription scope
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    setupRealtimeSubscription(projectId, defaultConfig);
 
   } catch (error) {
     console.error('Erro ao carregar configuração:', error);
   }
 }
 
-function subscribeToChanges() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const projectId = urlParams.get('id');
+function setupRealtimeSubscription(projectId, defaultConfig) {
+  if (!window.supabase) return;
   
-  // Se temos um projeto específico, filtramos por ele. 
-  // Caso contrário, monitoramos 'main_config' globalmente (embora idealmente devêssemos ter um projeto).
+  console.log('Iniciando subscrição realtime para projeto:', projectId);
+  
   const filterString = projectId ? `project_id=eq.${projectId}` : `setting_name=eq.main_config`;
 
   supabase
-    .channel('site_settings_changes')
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'site_settings',
-        filter: filterString
-      },
-      (payload) => {
-        console.log('Mudança detectada no Supabase!', payload);
-        
-        // Verificação adicional de segurança
-        if (projectId && payload.new.project_id !== projectId) return;
-        
-        if (payload.new && payload.new.setting_value) {
-            const newConfig = payload.new.setting_value;
-            window.loadedConfig = newConfig;
-            
-            // Reaplicar tudo
-            applyMeta(newConfig);
-            applyColors(newConfig.colors);
-            applyTypography(newConfig.typography);
-            applyFrames(newConfig.frames);
-            applyImagesCSS(newConfig.images);
-            
-            applyImagesDOM(newConfig.images);
-            applyText(newConfig.text);
-            applyPricing(newConfig.pricing);
-            applyAgenda(newConfig.agenda);
-            applyVideo(newConfig.video);
-            applyFaq(newConfig.faq);
-            applyVariables(newConfig.variables);
+    .channel('public:site_settings')
+    .on('postgres_changes', { 
+      event: 'UPDATE', 
+      schema: 'public', 
+      table: 'site_settings',
+      filter: filterString
+    }, (payload) => {
+      console.log('Alteração de config recebida:', payload);
+      if (payload.new && payload.new.setting_value) {
+        let newConfig = payload.new.setting_value;
+        if (defaultConfig) {
+            newConfig = deepMerge(defaultConfig, newConfig);
         }
+        
+        // Re-apply everything
+        window.loadedConfig = newConfig;
+        applyMeta(newConfig);
+        applyColors(newConfig.colors);
+        applyTypography(newConfig.typography);
+        applyFrames(newConfig.frames);
+        applyImagesCSS(newConfig.images);
+        applyImagesDOM(newConfig.images);
+        applyText(newConfig.text);
+        applyPricing(newConfig.pricing);
+        applyAgenda(newConfig.agenda);
+        applyVideo(newConfig.video);
+        applyFaq(newConfig.faq);
+        applyVariables(newConfig.variables);
       }
-    )
+    })
     .subscribe();
 }
 
@@ -231,9 +238,22 @@ function applyColors(colors) {
     if (key === 'btnRecreacao2Bg') cssVar = '--btn-recreacao-2-bg';
     if (key === 'btnFooterBg') cssVar = '--btn-footer-bg';
     if (key === 'btnIntroText') cssVar = '--btn-intro-text';
-    if (key === 'btnRecreacao1Text') cssVar = '--btn-recreacao-1-text';
     if (key === 'btnRecreacao2Text') cssVar = '--btn-recreacao-2-text';
+    if (key === 'btnFooterBg') cssVar = '--btn-footer-bg';
     if (key === 'btnFooterText') cssVar = '--btn-footer-text';
+    if (key === 'footerText') cssVar = '--footer-text';
+    
+    // Novos campos solicitados
+    if (key === 'btnReserveBg') cssVar = '--btn-reserve-bg';
+    if (key === 'btnReserveText') cssVar = '--btn-reserve-text';
+    if (key === 'carouselNavBg') cssVar = '--carousel-nav-bg';
+    if (key === 'carouselNavColor') cssVar = '--carousel-nav-color';
+    if (key === 'btnShadow') cssVar = '--btn-shadow-color';
+    if (key === 'feedbackDot') cssVar = '--feedback-dot-color';
+    if (key === 'feedbackDotActive') cssVar = '--feedback-dot-active-color';
+    if (key === 'footerIcon') cssVar = '--footer-icon-color';
+    if (key === 'promoText') cssVar = '--color-promo-text';
+    if (key === 'promoHighlight') cssVar = '--color-promo-highlight';
     
     root.style.setProperty(cssVar, value);
 
@@ -463,7 +483,7 @@ function applyVariables(variables) {
 
   section.hidden = false;
   const position = variables?.programacoes?.position || variables?.programacaoInfantil?.position || 'afterIntro';
-  const bgColor = variables?.programacoes?.bgColor;
+  const bgColor = variables?.programacoes?.bgColor || variables?.programacaoInfantil?.bgColor;
   if (typeof bgColor === 'string' && bgColor.trim()) {
     section.style.setProperty('--programacoes-bg', bgColor.trim());
   } else {
@@ -526,6 +546,25 @@ function applyVariables(variables) {
 
 function camelToKebab(string) {
   return string.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+// Deep Merge Utility
+function deepMerge(target, source) {
+  if (typeof target !== 'object' || target === null) return source;
+  if (typeof source !== 'object' || source === null) return target;
+
+  const output = Array.isArray(target) ? [] : { ...target };
+  
+  if (Array.isArray(source)) return source.slice(); // Arrays are overwritten, not merged deeply
+
+  for (const key of Object.keys(source)) {
+    if (source[key] instanceof Object && key in target) {
+      output[key] = deepMerge(target[key], source[key]);
+    } else {
+      output[key] = source[key];
+    }
+  }
+  return output;
 }
 
 // Iniciar carregamento

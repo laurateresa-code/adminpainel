@@ -138,6 +138,13 @@
                 <input type="text" class="color-hex" data-sync="accent">
               </div>
             </div>
+            <div class="form-group">
+              <label>Sombra dos botões</label>
+              <div class="color-input">
+                <input type="color" id="btnShadow" data-path="colors.btnShadow">
+                <input type="text" class="color-hex" data-sync="btnShadow">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -248,6 +255,20 @@
               </div>
             </div>
             <div class="form-group">
+              <label>Agenda — botão "Ver disponibilidade"</label>
+              <div class="color-input">
+                <input type="color" id="btnReserveBg" data-path="colors.btnReserveBg">
+                <input type="text" class="color-hex" data-sync="btnReserveBg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Agenda — texto do botão</label>
+              <div class="color-input">
+                <input type="color" id="btnReserveText" data-path="colors.btnReserveText">
+                <input type="text" class="color-hex" data-sync="btnReserveText">
+              </div>
+            </div>
+            <div class="form-group">
               <label>Footer — cor do botão</label>
               <div class="color-input">
                 <input type="color" id="btnFooterBg" data-path="colors.btnFooterBg">
@@ -259,6 +280,47 @@
               <div class="color-input">
                 <input type="color" id="btnFooterText" data-path="colors.btnFooterText">
                 <input type="text" class="color-hex" data-sync="btnFooterText">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Footer — ícones sociais</label>
+              <div class="color-input">
+                <input type="color" id="footerIcon" data-path="colors.footerIcon">
+                <input type="text" class="color-hex" data-sync="footerIcon">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h4>Navegação e Carrosséis</h4>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Botões de rolagem — fundo</label>
+              <div class="color-input">
+                <input type="color" id="carouselNavBg" data-path="colors.carouselNavBg">
+                <input type="text" class="color-hex" data-sync="carouselNavBg">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Botões de rolagem — ícone</label>
+              <div class="color-input">
+                <input type="color" id="carouselNavColor" data-path="colors.carouselNavColor">
+                <input type="text" class="color-hex" data-sync="carouselNavColor">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Feedbacks — bolinhas (inativo)</label>
+              <div class="color-input">
+                <input type="color" id="feedbackDot" data-path="colors.feedbackDot">
+                <input type="text" class="color-hex" data-sync="feedbackDot">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Feedbacks — bolinhas (ativo)</label>
+              <div class="color-input">
+                <input type="color" id="feedbackDotActive" data-path="colors.feedbackDotActive">
+                <input type="text" class="color-hex" data-sync="feedbackDotActive">
               </div>
             </div>
           </div>
@@ -358,6 +420,27 @@
             </div>
           </div>
         </div>
+        <div class="config-card">
+          <h4>Texto Promocional (Destaque)</h4>
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Configure as cores do texto "Tudo isso e muito mais..."</p>
+          <div class="colors-grid">
+            <div class="form-group">
+              <label>Cor do texto base</label>
+              <div class="color-input">
+                <input type="color" id="promoText" data-path="colors.promoText">
+                <input type="text" class="color-hex" data-sync="promoText">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cor do texto destacado (sublinhado)</label>
+              <div class="color-input">
+                <input type="color" id="promoHighlight" data-path="colors.promoHighlight">
+                <input type="text" class="color-hex" data-sync="promoHighlight">
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Tab: Tipografia -->
@@ -931,6 +1014,7 @@
     </main>
   </div>
 
-  <script type="module" src="admin.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="admin.js?v=5"></script>
 </body>
 </html>

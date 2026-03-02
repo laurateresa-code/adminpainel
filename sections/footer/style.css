@@ -1,6 +1,6 @@
 .footer {
   background: var(--bg-footer-dark);
-  color: var(--text-inverse);
+  color: var(--footer-text, var(--text-inverse));
   padding: 80px 0 40px;
 }
 
@@ -113,7 +113,7 @@
   height: 40px;
   background-color: var(--bg-main);
   border-radius: 50%;
-  color: var(--color-pink); /* Rosa da marca */
+  color: var(--footer-icon-color, var(--color-pink)); /* Rosa da marca */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
 }

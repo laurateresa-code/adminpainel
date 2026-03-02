@@ -83,13 +83,13 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 800;
   font-family: var(--font-heading);
   cursor: pointer;
-  box-shadow: 0 4px 0 var(--color-primary-dark);
+  box-shadow: 0 4px 0 var(--btn-shadow-color, var(--color-primary-dark));
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .btn--pink:active, .btn--primary:active {
   transform: translateY(4px);
-  box-shadow: 0 0 0 var(--color-primary-dark);
+  box-shadow: 0 0 0 var(--btn-shadow-color, var(--color-primary-dark));
 }
 .btn--yellow { background: var(--btn-yellow-bg); color: var(--btn-yellow-text); }
 .btn:disabled, .btn.is-disabled { opacity: .6; cursor: not-allowed; }
@@ -261,8 +261,8 @@ img { max-width: 100%; height: auto; display: block; }
 .reserve__btn { 
   margin: 0; 
   border-radius: 999px; 
-  background: var(--color-primary); 
-  color: #fff; 
+  background: var(--btn-reserve-bg, var(--color-primary)); 
+  color: var(--btn-reserve-text, #fff); 
   box-shadow: 0 12px 22px rgba(0,0,0,.35); 
   animation: pulse 2.2s ease-in-out infinite; 
   border: none;
@@ -297,8 +297,8 @@ img { max-width: 100%; height: auto; display: block; }
 .feedback__quote { max-width: 900px; text-align: center; color: #2b2100; font-family: "Lato", sans-serif; font-style: italic; font-size: clamp(16px, 2vw, 20px); font-weight: 300; line-height: 1.6; min-height: 3.2em; word-break: break-word; white-space: normal; }
 .feedback__author { color: var(--color-feedback-author); font-family: "Lato", sans-serif; font-style: italic; font-weight: 900; font-size: 18px; }
 .feedback__dots { display: flex; gap: 10px; justify-content: center; align-items: center; }
-.feedback__dots .dot { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: none; background: #111; opacity: .3; cursor: pointer; transition: transform 200ms ease, background-color 200ms ease, opacity 200ms ease; }
-.feedback__dots .dot.is-active { transform: scale(1.5); background: #ff007f; opacity: 1; }
+.feedback__dots .dot { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: none; background: var(--feedback-dot-color, #111); opacity: .3; cursor: pointer; transition: transform 200ms ease, background-color 200ms ease, opacity 200ms ease; }
+.feedback__dots .dot.is-active { transform: scale(1.5); background: var(--feedback-dot-active-color, #ff007f); opacity: 1; }
 
 @media (max-width: 768px) {
   .feedback__viewport { touch-action: pan-y; }

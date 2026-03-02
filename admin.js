@@ -195,7 +195,19 @@ async function loadConfig() {
     }
 
     if (data && data.setting_value) {
-      currentConfig = data.setting_value;
+      // Carregar defaults locais para merge (garante que novos campos apareçam)
+      try {
+        const resp = await fetch('./config/config.json');
+        if (resp.ok) {
+          const defaults = await resp.json();
+          currentConfig = deepMerge(defaults, data.setting_value);
+        } else {
+          currentConfig = data.setting_value;
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar defaults para merge:', e);
+        currentConfig = data.setting_value;
+      }
       console.log('Configuração carregada do Supabase para o projeto', currentProjectId);
     } else {
       // Fallback para arquivo local se não existir no banco (primeiro load)
@@ -211,6 +223,25 @@ async function loadConfig() {
     console.error(error);
     showStatus('Erro ao carregar configurações: ' + error.message, 'error');
   }
+}
+
+// Deep Merge Utility
+function deepMerge(target, source) {
+  if (typeof target !== 'object' || target === null) return source;
+  if (typeof source !== 'object' || source === null) return target;
+
+  const output = Array.isArray(target) ? [] : { ...target };
+  
+  if (Array.isArray(source)) return source.slice();
+
+  for (const key of Object.keys(source)) {
+    if (source[key] instanceof Object && key in target) {
+      output[key] = deepMerge(target[key], source[key]);
+    } else {
+      output[key] = source[key];
+    }
+  }
+  return output;
 }
 
 function populateForm(config) {

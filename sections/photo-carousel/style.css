@@ -69,10 +69,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--carousel-nav-bg, rgba(255, 255, 255, 0.8));
   border: none;
   cursor: pointer;
-  color: var(--text-color);
+  color: var(--carousel-nav-color, var(--text-color));
   z-index: 10;
   width: 50px;
   height: 50px;
@@ -85,7 +85,7 @@
 }
 
 .photo-carousel__btn:hover {
-  background: var(--bg-main);
+  background: var(--carousel-nav-bg, var(--bg-main));
   transform: translateY(-50%) scale(1.1);
   box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
@@ -132,7 +132,7 @@
   .photo-carousel__btn {
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--carousel-nav-bg, rgba(255, 255, 255, 0.6));
   }
   
   .photo-carousel__btn--prev {

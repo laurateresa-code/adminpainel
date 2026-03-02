@@ -28,6 +28,16 @@
     "btnRecreacao2Text": "#ffffff",
     "btnFooterBg": "#ff2e7a",
     "btnFooterText": "#ffffff",
+    "btnReserveBg": "#ff0064",
+    "btnReserveText": "#ffffff",
+    "carouselNavBg": "#ff0064",
+    "carouselNavColor": "#ffffff",
+    "btnShadow": "#c2185b",
+    "feedbackDot": "#73c4b8",
+    "feedbackDotActive": "#E91E63",
+    "footerIcon": "#ffffff",
+    "promoText": "#ffffff",
+    "promoHighlight": "#ffffff",
     "frameBorder": "#000000"
   },
   "images": {

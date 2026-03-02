@@ -25,9 +25,9 @@
   line-height: 1.12;
   text-transform: uppercase;
   color: var(--color-principal-title, var(--color-light));
-  -webkit-text-stroke: calc(var(--text-stroke-width) * 2) var(--color-dark);
+  -webkit-text-stroke: calc(var(--text-stroke-width) * 2) var(--text-stroke-color);
   paint-order: stroke fill;
-  text-shadow: 3px 3px 0 var(--color-dark);
+  text-shadow: 3px 3px 0 var(--text-stroke-color);
   max-width: 900px;
   margin: 0;
 }
@@ -38,7 +38,7 @@
   font-weight: 500;
   font-size: 18px;
   line-height: 1.7;
-  color: var(--color-dark);
+  color: var(--color-intro-desc, var(--color-dark));
   max-width: 900px;
   margin: 0;
 }
@@ -130,7 +130,7 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--color-dark);
+  color: var(--color-intro-label, var(--color-dark));
 }
 
 .intro__price-wrapper {
@@ -187,19 +187,19 @@
   font-family: var(--font-heading);
   font-weight: 900;
   font-size: 64px;
-  color: #FFFFFF; 
+  color: var(--color-promo-highlight, #FFFFFF); 
   margin: 4px 0;
-  -webkit-text-stroke: max(4px, calc(var(--text-stroke-width) * 4)) var(--color-dark);
+  -webkit-text-stroke: max(4px, calc(var(--text-stroke-width) * 4)) var(--text-stroke-color);
   paint-order: stroke fill;
   text-shadow:
-    2px 2px 0 var(--color-dark),
-    -2px 2px 0 var(--color-dark),
-    2px -2px 0 var(--color-dark),
-    -2px -2px 0 var(--color-dark),
-    0 2px 0 var(--color-dark),
-    0 -2px 0 var(--color-dark),
-    2px 0 0 var(--color-dark),
-    -2px 0 0 var(--color-dark);
+    2px 2px 0 var(--text-stroke-color),
+    -2px 2px 0 var(--text-stroke-color),
+    2px -2px 0 var(--text-stroke-color),
+    -2px -2px 0 var(--text-stroke-color),
+    0 2px 0 var(--text-stroke-color),
+    0 -2px 0 var(--text-stroke-color),
+    2px 0 0 var(--text-stroke-color),
+    -2px 0 0 var(--text-stroke-color);
   
   /* Animação de pulso para destaque */
   animation: pricePulse 2s infinite ease-in-out;
@@ -216,7 +216,7 @@
   font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
-  color: var(--color-dark);
+  color: var(--color-intro-label, var(--color-dark));
   margin-bottom: 16px;
 }
 

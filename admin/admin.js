@@ -92,7 +92,7 @@ function addBackToDashboardLink() {
         
         // Botão Ver Site (Ícone de Olho)
         const viewLink = document.createElement('a');
-        viewLink.href = `../index.html?id=${currentProjectId}`;
+        viewLink.href = `../view.html?id=${currentProjectId}`;
         viewLink.target = '_blank';
         viewLink.title = 'Visualizar Site';
         viewLink.innerHTML = '<i class="fas fa-eye" style="font-size: 1.2rem;"></i>';
@@ -165,8 +165,20 @@ async function loadConfig() {
     }
 
     if (data && data.setting_value) {
-      currentConfig = data.setting_value;
       console.log('Configuração carregada do Supabase para o projeto', currentProjectId);
+      // Carregar defaults para merge
+      try {
+        const response = await fetch('../config/config.json');
+        if (response.ok) {
+          const defaultConfig = await response.json();
+          currentConfig = deepMerge(defaultConfig, data.setting_value);
+        } else {
+          currentConfig = data.setting_value;
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar defaults para merge:', e);
+        currentConfig = data.setting_value;
+      }
     } else {
       // Fallback para arquivo local se não existir no banco (primeiro load)
       console.log('Carregando configuração local padrão...');
@@ -181,6 +193,24 @@ async function loadConfig() {
     console.error(error);
     showStatus('Erro ao carregar configurações: ' + error.message, 'error');
   }
+}
+
+function deepMerge(target, source) {
+  if (typeof target !== 'object' || target === null) return source;
+  if (typeof source !== 'object' || source === null) return target;
+
+  const output = Array.isArray(target) ? [] : { ...target };
+  
+  if (Array.isArray(source)) return source.slice();
+
+  for (const key of Object.keys(source)) {
+    if (source[key] instanceof Object && key in target) {
+      output[key] = deepMerge(target[key], source[key]);
+    } else {
+      output[key] = source[key];
+    }
+  }
+  return output;
 }
 
 function populateForm(config) {
@@ -877,7 +907,7 @@ function showQuickMenu() {
   list.className = 'popover-list';
   const items = [
     { icon: 'fa-solid fa-table-columns', label: 'Ir para Projetos', action: () => { window.location.href = 'dashboard.html'; } },
-    { icon: 'fa-regular fa-eye', label: 'Abrir Site', action: () => { if (currentProjectId) window.open(`../index.html?id=${currentProjectId}`, '_blank'); } },
+    { icon: 'fa-regular fa-eye', label: 'Abrir Site', action: () => { if (currentProjectId) window.open(`../view.html?id=${currentProjectId}`, '_blank'); } },
     { icon: 'fa-solid fa-right-from-bracket', label: 'Sair da Conta', action: async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; } }
   ];
   items.forEach(it => {

@@ -32,7 +32,7 @@
   cursor: pointer;
   font-size: 88px;
   line-height: 1;
-  color: var(--color-dark);
+  color: var(--carousel-nav-color, var(--color-dark));
   padding: 0;
   width: 64px;
   height: 64px;

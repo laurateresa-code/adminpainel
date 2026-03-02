@@ -284,6 +284,54 @@ createForm.addEventListener('submit', async e=>{
     .select();
   if (error){ alert('Erro ao criar projeto: '+error.message); return; }
   const project = created[0];
+  
+  // --- INICIO: Aplicar Template "Carnaval" ---
+  try {
+    let templateConfig = null;
+    
+    // 1. Tentar buscar config do projeto "Carna Village"
+    const { data: templateProjects } = await supabase
+      .from('projects')
+      .select('id')
+      .ilike('name', '%Carna%')
+      .limit(1);
+      
+    if (templateProjects && templateProjects.length > 0) {
+      const templateId = templateProjects[0].id;
+      const { data: templateSettings } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('project_id', templateId)
+        .eq('setting_name', 'main_config')
+        .single();
+        
+      if (templateSettings && templateSettings.setting_value) {
+        templateConfig = templateSettings.setting_value;
+        console.log('Template "Carnaval" encontrado e carregado.');
+      }
+    }
+    
+    // 2. Fallback para config.json se não encontrar o template
+    if (!templateConfig) {
+      console.log('Template "Carnaval" não encontrado, usando config.json padrão.');
+      const response = await fetch('../config/config.json');
+      templateConfig = await response.json();
+    }
+    
+    // 3. Salvar config no novo projeto
+    if (templateConfig) {
+        await supabase.from('site_settings').insert({
+            project_id: project.id,
+            setting_name: 'main_config',
+            setting_value: templateConfig
+        });
+    }
+  } catch (err) {
+    console.error('Erro ao aplicar template:', err);
+    alert('Aviso: O projeto foi criado, mas houve um erro ao aplicar o template "Carnaval". Verifique o console.');
+  }
+  // --- FIM: Aplicar Template "Carnaval" ---
+
   try{
     const meta = { client, type, notes };
     await supabase.from('site_settings').insert({ project_id: project.id, setting_name: 'project_meta', setting_value: meta });
