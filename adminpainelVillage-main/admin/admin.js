@@ -4,6 +4,26 @@ import { supabase } from '../config/supabaseClient.js';
 let currentConfig = {};
 let currentProjectId = null;
 
+function normalizeHexColor(value) {
+  if (typeof value !== 'string') return null;
+  const raw = value.trim();
+  if (!raw) return null;
+
+  const withHash = raw.startsWith('#') ? raw : `#${raw}`;
+  const hex = withHash.slice(1);
+
+  if (/^[0-9a-fA-F]{3}$/.test(hex)) {
+    const expanded = hex.split('').map((c) => c + c).join('');
+    return `#${expanded.toUpperCase()}`;
+  }
+
+  if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+    return `#${hex.toUpperCase()}`;
+  }
+
+  return null;
+}
+
 // Obter ID do projeto da URL
 const urlParams = new URLSearchParams(window.location.search);
 currentProjectId = urlParams.get('id');
@@ -231,13 +251,21 @@ function populateForm(config) {
       if (input.type === 'checkbox') {
         input.checked = value === true || value === 'true';
       } else {
-        input.value = value;
+        if (input.type === 'color') {
+          const normalized = normalizeHexColor(value);
+          if (normalized) input.value = normalized;
+        } else {
+          input.value = value;
+        }
       }
       
       // Se for cor, atualiza o hex text
       if (input.type === 'color') {
         const hexInput = document.querySelector(`[data-sync="${input.id}"]`);
-        if (hexInput) hexInput.value = value;
+        if (hexInput) {
+          const normalized = normalizeHexColor(value);
+          hexInput.value = normalized ?? value;
+        }
       }
 
       // Se for imagem, atualiza o preview
@@ -364,22 +392,29 @@ function setupEventListeners() {
   document.querySelectorAll('input[type="color"]').forEach(picker => {
     picker.addEventListener('input', (e) => {
       const hexInput = document.querySelector(`[data-sync="${e.target.id}"]`);
-      if (hexInput) hexInput.value = e.target.value;
+      if (hexInput) hexInput.value = String(e.target.value).toUpperCase();
       updateConfigFromInput(e.target);
     });
   });
 
   // Atualizar Color Picker quando muda o HEX
   document.querySelectorAll('.color-hex').forEach(hex => {
+    hex.placeholder = hex.placeholder || '#RRGGBB';
+    hex.autocomplete = 'off';
+    hex.spellcheck = false;
     hex.addEventListener('input', (e) => {
       const pickerId = e.target.dataset.sync;
       const picker = document.getElementById(pickerId);
-      const v = e.target.value;
-      const isValid = /^#[0-9a-fA-F]{6}$/.test(v);
-      if (picker && isValid) {
-        picker.value = v;
+      const normalized = normalizeHexColor(e.target.value);
+      if (picker && normalized) {
+        picker.value = normalized;
         updateConfigFromInput(picker);
       }
+    });
+
+    hex.addEventListener('blur', (e) => {
+      const normalized = normalizeHexColor(e.target.value);
+      if (normalized) e.target.value = normalized;
     });
   });
 
