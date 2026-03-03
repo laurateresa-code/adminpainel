@@ -1,0 +1,101 @@
+/* Fundo idêntico ao da screenshot */
+.badges {
+  background: var(--bg-tripadvisor, var(--bg-surface, var(--bg-main)));
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0 calc(80px + var(--badges-cut-height, clamp(70px, 10vw, 140px)));
+}
+
+.badges::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 130%;
+  height: var(--badges-cut-height, clamp(70px, 10vw, 140px));
+  background: var(--bg-main);
+  transform: translateX(-50%);
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* GRID PRINCIPAL */
+.badges__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.badges__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* SOMBRA SUAVE */
+.badge-img {
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* HOVER (TRAe aceita hover) */
+.badge-img:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.22));
+}
+
+/* TAMANHO DOS CIRCULARES */
+.badge-img--circle {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  border-radius: 50%;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Animação flutuando suave */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Selos entram com fade + zoom */
+.badge-img {
+  opacity: 0;
+  animation: fadeZoom 0.7s ease forwards;
+}
+
+/* Atrasos individuais para entrada organizada */
+.badges__row .badge-img:nth-child(1) { animation-delay: 0.2s; }
+.badges__row .badge-img:nth-child(2) { animation-delay: 0.4s; }
+.badges__row .badge-img:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes fadeZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* TAMANHO DO SELO QUADRADO */
+.badge-img--square { display: none; }
+
+/* Remove títulos e textos (como na screenshot) */
+.badge-img h3,
+.badge-img p {
+  display: none !important;
+}
