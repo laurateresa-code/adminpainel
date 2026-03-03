@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="38" fill="#0f0f10" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="40" cy="40" r="10" fill="#ff0064"/>
+  <text x="50%" y="76%" fill="#ffffff" font-size="10" font-family="Open Sans, Arial" text-anchor="middle">VINIL</text>
+</svg>
