@@ -1,5 +1,4 @@
 import { supabase } from '../config/supabaseClient.js';
-
 // Estado global da configuração
 let currentConfig = {};
 let currentProjectId = null;
@@ -88,41 +87,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 function ensureHexInputsForColorPickers() {
   document.querySelectorAll('input[type="color"]').forEach((picker) => {
     if (!(picker instanceof HTMLInputElement)) return;
-    if (!picker.id) return;
 
-    const existing = document.querySelector(`input.color-hex[data-sync="${picker.id}"]`);
-    if (existing) {
-      existing.placeholder = existing.placeholder || '#RRGGBB';
-      existing.autocomplete = 'off';
-      existing.spellcheck = false;
-      return;
+    let wrapper = picker.closest('.color-input');
+    if (!wrapper) {
+      const parent = picker.parentElement;
+      if (!parent) return;
+
+      wrapper = document.createElement('div');
+      wrapper.className = 'color-input';
+      parent.replaceChild(wrapper, picker);
+      wrapper.appendChild(picker);
     }
 
-    const hex = document.createElement('input');
-    hex.type = 'text';
-    hex.className = 'color-hex';
-    hex.dataset.sync = picker.id;
-    hex.placeholder = '#RRGGBB';
+    let hex = wrapper.querySelector('input.color-hex');
+    if (!hex) {
+      hex = document.createElement('input');
+      hex.type = 'text';
+      hex.className = 'color-hex';
+      wrapper.insertBefore(hex, picker.nextSibling);
+    }
+
+    hex.placeholder = hex.placeholder || '#RRGGBB';
     hex.autocomplete = 'off';
     hex.spellcheck = false;
-
     const normalized = normalizeHexColor(picker.value);
     hex.value = normalized ?? String(picker.value || '');
-
-    const parent = picker.parentElement;
-    if (parent && parent.classList.contains('color-input')) {
-      parent.insertBefore(hex, picker.nextSibling);
-      return;
-    }
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'color-input';
-
-    if (parent) {
-      parent.replaceChild(wrapper, picker);
-    }
-    wrapper.appendChild(picker);
-    wrapper.appendChild(hex);
   });
 }
 
@@ -303,7 +292,8 @@ function populateForm(config) {
       
       // Se for cor, atualiza o hex text
       if (input.type === 'color') {
-        const hexInput = document.querySelector(`[data-sync="${input.id}"]`);
+        const wrapper = input.closest('.color-input');
+        const hexInput = wrapper ? wrapper.querySelector('input.color-hex') : null;
         if (hexInput) {
           const normalized = normalizeHexColor(value);
           hexInput.value = normalized ?? value;
@@ -433,9 +423,13 @@ function setupEventListeners() {
   // Atualizar HEX quando muda o color picker
   document.querySelectorAll('input[type="color"]').forEach(picker => {
     picker.addEventListener('input', (e) => {
-      const hexInput = document.querySelector(`[data-sync="${e.target.id}"]`);
-      if (hexInput) hexInput.value = String(e.target.value).toUpperCase();
-      updateConfigFromInput(e.target);
+      const target = e.target;
+      if (target instanceof HTMLInputElement) {
+        const wrapper = target.closest('.color-input');
+        const hexInput = wrapper ? wrapper.querySelector('input.color-hex') : null;
+        if (hexInput) hexInput.value = String(target.value).toUpperCase();
+        updateConfigFromInput(target);
+      }
     });
   });
 
@@ -445,18 +439,22 @@ function setupEventListeners() {
     hex.autocomplete = 'off';
     hex.spellcheck = false;
     hex.addEventListener('input', (e) => {
-      const pickerId = e.target.dataset.sync;
-      const picker = document.getElementById(pickerId);
-      const normalized = normalizeHexColor(e.target.value);
-      if (picker && normalized) {
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      const wrapper = target.closest('.color-input');
+      const picker = wrapper ? wrapper.querySelector('input[type="color"]') : null;
+      const normalized = normalizeHexColor(target.value);
+      if (picker instanceof HTMLInputElement && normalized) {
         picker.value = normalized;
         updateConfigFromInput(picker);
       }
     });
 
     hex.addEventListener('blur', (e) => {
-      const normalized = normalizeHexColor(e.target.value);
-      if (normalized) e.target.value = normalized;
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      const normalized = normalizeHexColor(target.value);
+      if (normalized) target.value = normalized;
     });
   });
 
