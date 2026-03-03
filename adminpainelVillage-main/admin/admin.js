@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setupTabs();
   await loadConfig();
+  ensureHexInputsForColorPickers();
   setupEventListeners();
   setupTopbarActions();
   
@@ -83,6 +84,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+
+function ensureHexInputsForColorPickers() {
+  document.querySelectorAll('input[type="color"]').forEach((picker) => {
+    if (!(picker instanceof HTMLInputElement)) return;
+    if (!picker.id) return;
+
+    const existing = document.querySelector(`input.color-hex[data-sync="${picker.id}"]`);
+    if (existing) {
+      existing.placeholder = existing.placeholder || '#RRGGBB';
+      existing.autocomplete = 'off';
+      existing.spellcheck = false;
+      return;
+    }
+
+    const hex = document.createElement('input');
+    hex.type = 'text';
+    hex.className = 'color-hex';
+    hex.dataset.sync = picker.id;
+    hex.placeholder = '#RRGGBB';
+    hex.autocomplete = 'off';
+    hex.spellcheck = false;
+
+    const normalized = normalizeHexColor(picker.value);
+    hex.value = normalized ?? String(picker.value || '');
+
+    const parent = picker.parentElement;
+    if (parent && parent.classList.contains('color-input')) {
+      parent.insertBefore(hex, picker.nextSibling);
+      return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'color-input';
+
+    if (parent) {
+      parent.replaceChild(wrapper, picker);
+    }
+    wrapper.appendChild(picker);
+    wrapper.appendChild(hex);
+  });
+}
 
 function addBackToDashboardLink() {
     // Verifica se já adicionamos o header
