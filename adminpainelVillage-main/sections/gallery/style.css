@@ -1,14 +1,5 @@
 /* TITLE */
 .gallery__title {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 28px;
-  text-align: center;
-  text-transform: uppercase;
-  color: var(--color-gallery-title); 
-  -webkit-text-stroke: var(--text-stroke-width) var(--text-stroke-color);
-  paint-order: stroke fill;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.25);
   margin-bottom: 24px;
 }
 

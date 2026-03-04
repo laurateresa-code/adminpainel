@@ -683,7 +683,7 @@ async function loadUsersProfiles() {
     }
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, full_name, created_at, email');
+      .select('id, full_name, updated_at, email');
     if (error) throw error;
     usersCache = data || [];
     renderUsersTable();
@@ -708,7 +708,7 @@ function renderUsersTable() {
     return;
   }
   tbody.innerHTML = filtered.map(u => {
-    const created = u.created_at ? new Date(u.created_at).toLocaleDateString() : '—';
+    const created = u.updated_at ? new Date(u.updated_at).toLocaleDateString() : '—';
     return `
       <tr>
         <td style="padding:10px;border-bottom:1px solid var(--border)">${u.full_name || '—'}</td>

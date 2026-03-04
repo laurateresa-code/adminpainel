@@ -26,26 +26,12 @@
   z-index: 2;
 }
 
-.section-title {
-  font-family: var(--font-heading);
-  font-size: var(--h2-size);
-  font-weight: 800;
-  text-align: center;
+.agenda .section-title {
   margin: 0 0 16px;
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  -webkit-text-stroke: var(--text-stroke-width) var(--text-stroke-color);
-  paint-order: stroke fill;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  color: var(--color-calendar-title);
 }
 
 #agendaTitle {
   scroll-margin-top: calc(var(--countdown-h) + 120px);
-  font-size: clamp(24px, 4vw, 42px) !important;
-  color: var(--color-calendar-title);
-  -webkit-text-stroke: 0 !important;
-  text-shadow: none !important;
 }
 
 .selectors {

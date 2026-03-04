@@ -20,18 +20,18 @@ h2, .h2 { font-size: var(--h2-size); }
 
 .retro-title {
   font-family: var(--font-heading);
-  font-size: var(--h1-size) !important;
-  font-weight: 900 !important;
+  font-size: clamp(24px, 4.6vw, var(--h1-size)) !important;
+  font-weight: 800 !important;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  line-height: 1.06;
+  letter-spacing: 0.3px;
+  line-height: 1.12;
   text-align: center;
-  color: #ffffff;
-  -webkit-text-stroke: var(--text-stroke-width) var(--text-stroke-color);
+  color: var(--color-principal-title, #ffffff);
+  -webkit-text-stroke: calc(var(--text-stroke-width) * 2) var(--text-stroke-color);
   paint-order: stroke fill;
-  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.28);
-  margin: 0 auto 24px;
-  max-width: 100%;
+  text-shadow: 3px 3px 0 var(--text-stroke-color);
+  margin: 0 auto;
+  max-width: 900px;
 }
 
 h3, h4, h5, h6,

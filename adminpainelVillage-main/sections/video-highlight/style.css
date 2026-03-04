@@ -50,7 +50,7 @@
 }
 
 /* --- Container Base --- */
-.container {
+.highlight-section .container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 20px;
@@ -58,14 +58,8 @@
 }
 
 /* --- Typography --- */
-.section-title {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: clamp(24px, 4vw, 36px);
-  text-align: center;
-  line-height: 1.2;
+.highlight-section .section-title {
   margin-bottom: 40px;
-  text-transform: uppercase;
   position: relative;
   z-index: 20; /* GARANTIA TOTAL */
 }
@@ -134,16 +128,7 @@
 }
 
 .highlight-section .turma-title {
-  color: #ffffff !important;
-  -webkit-text-stroke: 2px #000 !important;
-  text-shadow: 4px 4px 0 #000 !important;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: clamp(32px, 5vw, 48px) !important;
-  text-align: center;
-  line-height: 1.1 !important;
   margin-bottom: 20px;
-  text-transform: uppercase;
   display: block; /* Ensure it behaves as a block for margins */
 }
 
@@ -326,15 +311,7 @@
 }
 
 .turma-title {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: clamp(32px, 5vw, 64px) !important;
-  color: #fff !important;
-  text-transform: uppercase;
   margin-bottom: 10px;
-  line-height: 1.1;
-  -webkit-text-stroke: var(--text-stroke-width) var(--text-stroke-color);
-  text-shadow: 4px 4px 0 rgba(0,0,0,0.2);
 }
 
 .turma-subtitle {

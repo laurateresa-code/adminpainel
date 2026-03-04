@@ -106,13 +106,13 @@
     "year": "2026"
   },
   "typography": {
-    "fontHeading": "\"Panton Rust Heavy Base Shadow\", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-    "fontBody": "\"Panton Rust Heavy Base Shadow\", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-    "sizeBase": "20px",
-    "sizeH1": "30px",
+    "fontHeading": "Rubik",
+    "fontBody": "Inter, sans-serif",
+    "sizeBase": "16px",
+    "sizeH1": "52px",
     "sizeH2": "30px",
     "textColor": "#000000",
-    "titleStrokeWidth": "3px",
+    "titleStrokeWidth": "1px",
     "titleStrokeColor": "#0f0f10",
     "colorH1": "#7216fe",
     "colorH2": "#26a628",
@@ -129,7 +129,7 @@
     "colorIntroDesc": "#000000",
     "colorIntroLabel": "#ffffff",
     "colorTurmaSubtitle": "#ffffff",
-    "colorPromoHighlight": "#ff0000"
+    "colorPromoHighlight": "#ffffff"
   },
   "frames": {
     "borderColor": "#ff0064",

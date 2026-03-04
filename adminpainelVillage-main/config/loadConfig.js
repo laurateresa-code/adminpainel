@@ -5,6 +5,8 @@ const sessionTimestamp = Date.now();
 async function loadConfig() {
   try {
     let config = null;
+    let resolvedProjectId = null;
+    let layoutTemplateConfig = null;
 
     // Tentar carregar do Supabase primeiro
     try {
@@ -23,6 +25,7 @@ async function loadConfig() {
           
           if (projectId) {
             query = query.eq('project_id', projectId);
+            resolvedProjectId = projectId;
           } else if (slug) {
             // Buscar o project_id pelo slug detectado
             const { data: project } = await supabase
@@ -33,6 +36,7 @@ async function loadConfig() {
             
             if (project) {
               projectId = project.id;
+              resolvedProjectId = projectId;
               query = query.eq('project_id', projectId);
             } else {
               projectId = null; // Não encontrou projeto com esse slug
@@ -79,6 +83,14 @@ async function loadConfig() {
       console.warn('Erro ao carregar config.json para merge:', e);
     }
 
+    layoutTemplateConfig = defaultConfig;
+    try {
+      const template = await fetchCarnavalTemplateConfig();
+      if (template?.config && typeof template.config === 'object') {
+        layoutTemplateConfig = template.config;
+      }
+    } catch {}
+
     if (!config) {
       console.log('Usando configuração local (fallback)...');
       config = defaultConfig;
@@ -97,6 +109,11 @@ async function loadConfig() {
         }
       }
     } catch {}
+
+    if (layoutTemplateConfig && typeof layoutTemplateConfig === 'object') {
+      config = applyTemplateLayout(config, layoutTemplateConfig);
+      window.layoutTemplateConfig = layoutTemplateConfig;
+    }
 
     applyMeta(config);
     applyColors(config.colors);
@@ -190,14 +207,14 @@ async function loadConfig() {
     // Retrieve projectId again for the subscription scope
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
-    setupRealtimeSubscription(projectId, defaultConfig);
+    setupRealtimeSubscription(projectId, defaultConfig, layoutTemplateConfig);
 
   } catch (error) {
     console.error('Erro ao carregar configuração:', error);
   }
 }
 
-function setupRealtimeSubscription(projectId, defaultConfig) {
+function setupRealtimeSubscription(projectId, defaultConfig, layoutTemplateConfig) {
   if (!window.supabase) return;
   
   console.log('Iniciando subscrição realtime para projeto:', projectId);
@@ -217,6 +234,13 @@ function setupRealtimeSubscription(projectId, defaultConfig) {
         let newConfig = payload.new.setting_value;
         if (defaultConfig) {
             newConfig = deepMerge(defaultConfig, newConfig);
+        }
+
+        const template = (layoutTemplateConfig && typeof layoutTemplateConfig === 'object')
+          ? layoutTemplateConfig
+          : (window.layoutTemplateConfig && typeof window.layoutTemplateConfig === 'object' ? window.layoutTemplateConfig : null);
+        if (template) {
+          newConfig = applyTemplateLayout(newConfig, template);
         }
         
         // Re-apply everything
@@ -601,6 +625,110 @@ function applyVariables(variables) {
 
 function camelToKebab(string) {
   return string.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+async function fetchCarnavalTemplateConfig() {
+  const projectIdCandidates = [
+    '7b1d4678-6980-4901-97ee-b69e25163ede',
+  ];
+
+  for (const projectId of projectIdCandidates) {
+    try {
+      const { data: templateSettings, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('project_id', projectId)
+        .eq('setting_name', 'main_config')
+        .single();
+
+      if (!error && templateSettings?.setting_value) {
+        return { projectId, config: templateSettings.setting_value };
+      }
+    } catch {}
+  }
+
+  const slugCandidates = ['carnaval', 'carna-village', 'carna-village-template', 'carna'];
+  let templateProjectId = null;
+
+  for (const slug of slugCandidates) {
+    try {
+      const { data } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('slug', slug)
+        .limit(1);
+      if (Array.isArray(data) && data.length) {
+        templateProjectId = data[0].id;
+        break;
+      }
+    } catch {}
+  }
+
+  if (!templateProjectId) {
+    const { data: templateProjects } = await supabase
+      .from('projects')
+      .select('id')
+      .ilike('name', '%Carna%')
+      .limit(1);
+    if (Array.isArray(templateProjects) && templateProjects.length) {
+      templateProjectId = templateProjects[0].id;
+    }
+  }
+
+  if (!templateProjectId) return null;
+
+  const { data: templateSettings, error } = await supabase
+    .from('site_settings')
+    .select('setting_value')
+    .eq('project_id', templateProjectId)
+    .eq('setting_name', 'main_config')
+    .single();
+
+  if (error || !templateSettings?.setting_value) return null;
+  return { projectId: templateProjectId, config: templateSettings.setting_value };
+}
+
+function applyTemplateLayout(targetConfig, templateConfig) {
+  const out = { ...(targetConfig || {}) };
+
+  if (templateConfig?.typography) {
+    out.typography = deepMerge(out.typography || {}, templateConfig.typography);
+  }
+  if (templateConfig?.colors) {
+    out.colors = deepMerge(out.colors || {}, templateConfig.colors);
+  }
+  if (templateConfig?.frames) {
+    out.frames = deepMerge(out.frames || {}, templateConfig.frames);
+  }
+  out.variables = applyTemplateVariables(out.variables, templateConfig?.variables);
+
+  return out;
+}
+
+function applyTemplateVariables(targetVariables, templateVariables) {
+  const out = deepMerge(targetVariables || {}, {});
+  if (!templateVariables || typeof templateVariables !== 'object') return out;
+
+  if (templateVariables.programacaoInfantil && typeof templateVariables.programacaoInfantil === 'object') {
+    const tpl = templateVariables.programacaoInfantil;
+    out.programacaoInfantil = out.programacaoInfantil && typeof out.programacaoInfantil === 'object' ? out.programacaoInfantil : {};
+    if (typeof tpl.enabled !== 'undefined') out.programacaoInfantil.enabled = tpl.enabled;
+    if (typeof tpl.position === 'string' && tpl.position.trim()) out.programacaoInfantil.position = tpl.position;
+    if (typeof tpl.bgColor === 'string') out.programacaoInfantil.bgColor = tpl.bgColor;
+  }
+
+  if (templateVariables.programacoes && typeof templateVariables.programacoes === 'object') {
+    const tpl = templateVariables.programacoes;
+    const existing = out.programacoes && typeof out.programacoes === 'object' ? out.programacoes : {};
+    const schedule = existing.schedule;
+    out.programacoes = existing;
+    if (typeof tpl.enabled !== 'undefined') out.programacoes.enabled = tpl.enabled;
+    if (typeof tpl.position === 'string' && tpl.position.trim()) out.programacoes.position = tpl.position;
+    if (typeof tpl.bgColor === 'string') out.programacoes.bgColor = tpl.bgColor;
+    if (schedule) out.programacoes.schedule = schedule;
+  }
+
+  return out;
 }
 
 // Deep Merge Utility

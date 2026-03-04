@@ -301,16 +301,36 @@ createForm.addEventListener('submit', async e=>{
   // --- INICIO: Aplicar Template "Carnaval" ---
   try {
     let templateConfig = null;
+    let templateId = null;
     
-    // 1. Tentar buscar config do projeto "Carna Village"
-    const { data: templateProjects } = await supabase
-      .from('projects')
-      .select('id')
-      .ilike('name', '%Carna%')
-      .limit(1);
-      
-    if (templateProjects && templateProjects.length > 0) {
-      const templateId = templateProjects[0].id;
+    const slugCandidates = ['carnaval', 'carna-village', 'carna-village-template', 'carna'];
+    for (const slug of slugCandidates) {
+      try {
+        const { data } = await supabase
+          .from('projects')
+          .select('id')
+          .eq('slug', slug)
+          .limit(1);
+        if (Array.isArray(data) && data.length) {
+          templateId = data[0].id;
+          break;
+        }
+      } catch {}
+    }
+
+    if (!templateId) {
+      const { data: templateProjects } = await supabase
+        .from('projects')
+        .select('id')
+        .ilike('name', '%Carna%')
+        .limit(1);
+        
+      if (Array.isArray(templateProjects) && templateProjects.length) {
+        templateId = templateProjects[0].id;
+      }
+    }
+
+    if (templateId) {
       const { data: templateSettings } = await supabase
         .from('site_settings')
         .select('setting_value')
